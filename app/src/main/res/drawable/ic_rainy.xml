@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp"
+    android:height="100dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+    <!-- 云朵 -->
+    <path
+        android:pathData="M40,70 C25,70 25,55 35,45 C25,45 15,55 15,65 C15,75 30,75 30,75 C30,75 30,70 40,70 Z"
+        android:fillColor="@color/cloudy_color" />
+    <path
+        android:pathData="M60,60 C45,60 45,45 55,35 C45,35 35,45 35,55 C35,65 50,65 50,65 C50,65 50,60 60,60 Z"
+        android:fillColor="@color/cloudy_color" />
+    <!-- 雨滴 -->
+    <path
+        android:pathData="M30,70 L32,80 M40,75 L42,85 M50,70 L52,80 M60,75 L62,85"
+        android:strokeColor="@color/rainy_color"
+        android:strokeWidth="3"
+        android:strokeLineCap="round" />
+    <!-- 雨滴底部 - 使用path代替circle -->
+    <group>
+        <path
+            android:pathData="M32,82 m-2,0 a2,2 0 1,0 4,0 a2,2 0 1,0 -4,0"
+            android:fillColor="@color/rainy_color" />
+        <path
+            android:pathData="M42,87 m-2,0 a2,2 0 1,0 4,0 a2,2 0 1,0 -4,0"
+            android:fillColor="@color/rainy_color" />
+        <path
+            android:pathData="M52,82 m-2,0 a2,2 0 1,0 4,0 a2,2 0 1,0 -4,0"
+            android:fillColor="@color/rainy_color" />
+        <path
+            android:pathData="M62,87 m-2,0 a2,2 0 1,0 4,0 a2,2 0 1,0 -4,0"
+            android:fillColor="@color/rainy_color" />
+    </group>
+</vector>

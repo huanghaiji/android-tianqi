@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">天气应用</string>
+    <string name="loading">加载中...</string>
+    <string name="location_permission_denied">需要位置权限来获取天气信息</string>
+    <string name="cannot_get_location">无法获取位置信息</string>
+    <string name="network_error">网络连接错误，请稍后再试</string>
+    <string name="weather_fetch_failed">获取天气数据失败</string>
+    <string name="forecast_title">5天天气预报</string>
+    <string name="humidity">湿度</string>
+    <string name="wind_speed">风速</string>
+    <string name="pressure">气压</string>
+    <string name="feels_like">体感温度</string>
+    <string name="last_updated">最后更新: %s</string>
+    <string name="refresh">刷新</string>
+    <string name="sunny">晴朗</string>
+    <string name="cloudy">多云</string>
+    <string name="partly_cloudy">晴间多云</string>
+    <string name="rainy">下雨</string>
+    <string name="heavy_rain">大雨</string>
+    <string name="light_rain">小雨</string>
+    <string name="stormy">雷暴</string>
+    <string name="snowy">下雪</string>
+    <string name="foggy">雾天</string>
+    <string name="unknown_weather">未知天气</string>
+</resources>

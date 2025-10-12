@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp"
+    android:height="100dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+    <!-- 云朵 -->
+    <path
+        android:pathData="M40,70 C25,70 25,55 35,45 C25,45 15,55 15,65 C15,75 30,75 30,75 C30,75 30,70 40,70 Z"
+        android:fillColor="@color/cloudy_color" />
+    <path
+        android:pathData="M60,60 C45,60 45,45 55,35 C45,35 35,45 35,55 C35,65 50,65 50,65 C50,65 50,60 60,60 Z"
+        android:fillColor="@color/cloudy_color" />
+    <!-- 雪花 -->
+    <path
+        android:pathData="M30,70 L34,74 M34,70 L30,74"
+        android:strokeColor="@color/snowy_color"
+        android:strokeWidth="3"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M40,75 L44,79 M44,75 L40,79"
+        android:strokeColor="@color/snowy_color"
+        android:strokeWidth="3"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M50,70 L54,74 M54,70 L50,74"
+        android:strokeColor="@color/snowy_color"
+        android:strokeWidth="3"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M60,75 L64,79 M64,75 L60,79"
+        android:strokeColor="@color/snowy_color"
+        android:strokeWidth="3"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M35,80 L39,84 M39,80 L35,84"
+        android:strokeColor="@color/snowy_color"
+        android:strokeWidth="3"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M45,85 L49,89 M49,85 L45,89"
+        android:strokeColor="@color/snowy_color"
+        android:strokeWidth="3"
+        android:strokeLineCap="round" />
+</vector>

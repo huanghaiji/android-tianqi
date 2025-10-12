@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp"
+    android:height="100dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+    <!-- 问号圆圈 - 使用path代替circle -->
+    <path
+        android:pathData="M50,50 m-20,0 a20,20 0 1,0 40,0 a20,20 0 1,0 -40,0"
+        android:fillColor="@color/text_secondary_color"
+        android:strokeColor="@color/text_primary_color"
+        android:strokeWidth="3" />
+    <!-- 问号 -->
+    <path
+        android:pathData="M50,40 C45,40 45,45 45,45 L45,55 C45,55 45,60 50,60 C55,60 55,55 55,55 L55,50"
+        android:strokeColor="@color/text_primary_color"
+        android:strokeWidth="5"
+        android:strokeLineCap="round"
+        android:fillColor="@color/transparent" />
+    <!-- 问号点 - 使用path代替circle -->
+    <path
+        android:pathData="M50,70 m-5,0 a5,5 0 1,0 10,0 a5,5 0 1,0 -10,0"
+        android:fillColor="@color/text_primary_color" />
+</vector>

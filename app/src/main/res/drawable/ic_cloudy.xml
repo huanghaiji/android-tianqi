@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp"
+    android:height="100dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+    <!-- 大云朵 -->
+    <path
+        android:pathData="M40,70 C25,70 25,55 35,45 C25,45 15,55 15,65 C15,75 30,75 30,75 C30,75 30,70 40,70 Z"
+        android:fillColor="@color/cloudy_color" />
+    <!-- 中云朵 -->
+    <path
+        android:pathData="M60,60 C45,60 45,45 55,35 C45,35 35,45 35,55 C35,65 50,65 50,65 C50,65 50,60 60,60 Z"
+        android:fillColor="@color/cloudy_color" />
+    <!-- 小云朵 -->
+    <path
+        android:pathData="M80,50 C65,50 65,35 75,25 C65,25 55,35 55,45 C55,55 70,55 70,55 C70,55 70,50 80,50 Z"
+        android:fillColor="@color/cloudy_color" />
+</vector>

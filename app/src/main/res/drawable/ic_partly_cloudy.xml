@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp"
+    android:height="100dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+    <!-- 太阳主体和光芒 -->
+    <group>
+        <!-- 太阳主体 - 使用path代替circle -->
+        <path
+            android:pathData="M70,30 m-15,0 a15,15 0 1,0 30,0 a15,15 0 1,0 -30,0"
+            android:fillColor="@color/sunny_color" />
+        <!-- 太阳光芒 -->
+        <path
+            android:pathData="M70 10 L70 20 M70 40 L70 50 M50 30 L60 30 M80 30 L90 30"
+            android:strokeColor="@color/sunny_color"
+            android:strokeWidth="3"
+            android:strokeLineCap="round" />
+        <path
+            android:pathData="M55 15 L65 25 M75 35 L85 45 M55 45 L65 35 M75 25 L85 15"
+            android:strokeColor="@color/sunny_color"
+            android:strokeWidth="3"
+            android:strokeLineCap="round" />
+    </group>
+    <!-- 云朵 -->
+    <path
+        android:pathData="M40,70 C25,70 25,55 35,45 C25,45 15,55 15,65 C15,75 30,75 30,75 C30,75 30,70 40,70 Z"
+        android:fillColor="@color/cloudy_color" />
+    <path
+        android:pathData="M60,60 C45,60 45,45 55,35 C45,35 35,45 35,55 C35,65 50,65 50,65 C50,65 50,60 60,60 Z"
+        android:fillColor="@color/cloudy_color" />
+</vector>

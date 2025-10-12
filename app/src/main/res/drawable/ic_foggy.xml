@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp"
+    android:height="100dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+    <!-- 雾效果 - 水平线条 -->
+    <path
+        android:pathData="M10,30 Q30,20 50,30 T90,30"
+        android:strokeColor="@color/foggy_color"
+        android:strokeWidth="5"
+        android:strokeLineCap="round"
+        android:fillColor="@color/transparent" />
+    <path
+        android:pathData="M10,40 Q30,30 50,40 T90,40"
+        android:strokeColor="@color/foggy_color"
+        android:strokeWidth="5"
+        android:strokeLineCap="round"
+        android:fillColor="@color/transparent"/>
+    <path
+        android:pathData="M10,50 Q30,40 50,50 T90,50"
+        android:strokeColor="@color/foggy_color"
+        android:strokeWidth="5"
+        android:strokeLineCap="round"
+        android:fillColor="@color/transparent" />
+    <path
+        android:pathData="M10,60 Q30,50 50,60 T90,60"
+        android:strokeColor="@color/foggy_color"
+        android:strokeWidth="5"
+        android:strokeLineCap="round"
+        android:fillColor="@color/transparent" />
+    <path
+        android:pathData="M10,70 Q30,60 50,70 T90,70"
+        android:strokeColor="@color/foggy_color"
+        android:strokeWidth="5"
+        android:strokeLineCap="round"
+        android:fillColor="@color/transparent" />
+</vector>
