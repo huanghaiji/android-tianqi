@@ -22,6 +22,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
@@ -632,10 +633,50 @@ public class MainActivity extends AppCompatActivity {
         pressureTextView.setText(weather.getMain().getPressure() + " hPa");
         feelsLikeTextView.setText(String.format("%.1f°C", weather.getMain().getFeels_like() - 273.15));
 
-        // 更新最后更新时间
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-        String currentTime = sdf.format(new Date());
-        lastUpdatedTextView.setText("最后更新: " + currentTime);
+        // 初始化刷新按钮（如果尚未初始化）
+        if (refreshButton == null) {
+            refreshButton = findViewById(R.id.refresh_button);
+        }
+        
+        // 设置更新时间为"更新于"
+        String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
+        lastUpdatedTextView.setText("更新于: " + currentTime);
+        
+        // 隐藏刷新按钮
+        if (refreshButton != null) {
+            refreshButton.setVisibility(View.GONE);
+        }
+        
+        // 取消之前的计时器
+        if (updateTimer != null) {
+            updateTimer.cancel();
+        }
+        
+        // 设置5分钟后切换为"最后更新"并显示刷新按钮
+        updateTimer = new CountDownTimer(5 * 60 * 1000, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                // 不需要实现
+            }
+            
+            @Override
+            public void onFinish() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        // 切换为"最后更新"
+                        String time = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date(preferencesHelper.getLastUpdateTime()));
+                        lastUpdatedTextView.setText("最后更新: " + time);
+                        
+                        // 显示刷新按钮
+                        if (refreshButton != null) {
+                            refreshButton.setVisibility(View.VISIBLE);
+                        }
+                    }
+                });
+            }
+        };
+        updateTimer.start();
 
         // 根据天气条件设置图标
         String weatherIcon = weather.getWeather().get(0).getIcon();
@@ -740,8 +781,18 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     
+    // 定时器，用于5分钟后切换文本和显示刷新按钮
+    private CountDownTimer updateTimer;
+    private View refreshButton;
+    
     // 刷新天气数据的方法
     public void refreshWeather(View view) {
+        // 隐藏刷新按钮
+        if (refreshButton != null) {
+            refreshButton.setVisibility(View.GONE);
+        }
+        
+        // 请求位置权限并刷新天气数据
         requestLocationPermission();
     }
 
