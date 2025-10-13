@@ -35,7 +35,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <!-- 顶部区域：城市名称和刷新按钮 -->
+            <!-- 顶部区域：城市名称 -->
             <RelativeLayout
                 android:id="@+id/top_bar"
                 android:layout_width="match_parent"
@@ -53,15 +53,6 @@
                     android:textColor="@color/text_primary_color"
                     android:textSize="24sp"
                     android:textStyle="bold" />
-
-                <Button
-                    android:id="@+id/refresh_button"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_alignParentEnd="true"
-                    android:background="@drawable/ic_refresh"
-                    android:onClick="refreshWeather"
-                    android:tint="@color/text_primary_color" />
             </RelativeLayout>
 
             <!-- 当前天气卡片 -->
@@ -72,7 +63,6 @@
                 android:layout_marginTop="16dp"
                 app:cardBackgroundColor="@color/card_background"
                 app:cardCornerRadius="16dp"
-                app:cardElevation="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/top_bar">
@@ -294,17 +284,38 @@
                         </RelativeLayout>
                     </GridLayout>
 
-                    <!-- 最后更新时间 -->
-                    <TextView
-                        android:id="@+id/last_updated"
-                        android:layout_width="wrap_content"
+                    <!-- 底部控制区域 -->
+                    <RelativeLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:text="最后更新: --"
-                        android:textColor="@color/text_secondary_color"
-                        android:textSize="12sp"
+                        android:gravity="right"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/weather_details" />
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/weather_details">
+
+                        <!-- 刷新按钮 -->
+                        <Button
+                            android:id="@+id/refresh_button"
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
+                            android:layout_alignParentStart="true"
+                            android:background="@drawable/ic_weather_placeholder"
+                            android:onClick="refreshWeather"
+                            android:tint="@color/text_primary_color" />
+
+                        <!-- 最后更新时间 -->
+                        <TextView
+                            android:id="@+id/last_updated"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginStart="12dp"
+                            android:layout_toEndOf="@+id/refresh_button"
+                            android:text="最后更新: --"
+                            android:textColor="@color/text_secondary_color"
+                            android:textSize="12sp" />
+                    </RelativeLayout>
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
 
@@ -316,7 +327,6 @@
                 android:layout_marginTop="16dp"
                 app:cardBackgroundColor="@color/card_background"
                 app:cardCornerRadius="16dp"
-                app:cardElevation="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/current_weather_card">

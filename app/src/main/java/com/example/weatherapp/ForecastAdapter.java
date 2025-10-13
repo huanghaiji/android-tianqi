@@ -198,9 +198,12 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
             if (iconCode.contains("01")) {
                 // 晴天
                 resourceId = R.drawable.ic_sunny;
-            } else if (iconCode.contains("02") || iconCode.contains("03") || iconCode.contains("04")) {
-                // 多云系列
+            } else if (iconCode.contains("02")) {
+                // 少云
                 resourceId = R.drawable.ic_partly_cloudy;
+            } else if (iconCode.contains("03") || iconCode.contains("04")) {
+                // 多云系列
+                resourceId = R.drawable.ic_cloudy;
             } else if (iconCode.contains("09") || iconCode.contains("10")) {
                 // 雨
                 resourceId = R.drawable.ic_rainy;

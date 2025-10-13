@@ -37,6 +37,7 @@ import android.widget.Toast;
 import com.example.weatherapp.model.CurrentWeather;
 import com.example.weatherapp.model.ForecastWeather;
 import com.example.weatherapp.viewmodel.WeatherViewModel;
+import com.example.weatherapp.DayGroupedForecastAdapter;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -76,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
     private View weatherContentLayout;
     private RecyclerView forecastRecyclerView;
     private ForecastAdapter forecastAdapter;
+    private DayGroupedForecastAdapter dayGroupedForecastAdapter;
     private PreferencesHelper preferencesHelper;
 
     @Override
@@ -107,7 +109,8 @@ public class MainActivity extends AppCompatActivity {
         // 初始化RecyclerView和Adapter
         forecastRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         forecastAdapter = new ForecastAdapter(new ArrayList<>());
-        forecastRecyclerView.setAdapter(forecastAdapter);
+        dayGroupedForecastAdapter = new DayGroupedForecastAdapter(this);
+        forecastRecyclerView.setAdapter(dayGroupedForecastAdapter);
 
         // 初始化ViewModel和LocationManager
         weatherViewModel = new ViewModelProvider(this).get(WeatherViewModel.class);
@@ -168,7 +171,8 @@ public class MainActivity extends AppCompatActivity {
             double cachedLongitude = preferencesHelper.getLongitude();
             String cachedCityName = preferencesHelper.getCityName();
             Log.d(TAG, "Using cached location: " + cachedLatitude + ", " + cachedLongitude + ", City: " + cachedCityName);
-            weatherViewModel.fetchWeatherData(cachedLatitude, cachedLongitude);
+            // 使用fetchLocationAndWeatherData确保同时获取城市名称
+            weatherViewModel.fetchLocationAndWeatherData(cachedLatitude, cachedLongitude);
         }
 
         // 请求位置权限并获取天气数据
@@ -724,21 +728,24 @@ public class MainActivity extends AppCompatActivity {
         if (iconCode.contains("01")) {
             // 晴天
             resourceId = R.drawable.ic_sunny;
-        } else if (iconCode.contains("02") || iconCode.contains("03") || iconCode.contains("04")) {
+        } else if (iconCode.contains("02")) {
+            // 少云
+            resourceId = R.drawable.ic_partly_cloudy;
+        } else if (iconCode.contains("03") || iconCode.contains("04")) {
             // 多云系列
-            resourceId = R.drawable.ic_sunny;
+            resourceId = R.drawable.ic_cloudy;
         } else if (iconCode.contains("09") || iconCode.contains("10")) {
             // 雨
-            resourceId = R.drawable.ic_sunny;
+            resourceId = R.drawable.ic_rainy;
         } else if (iconCode.contains("11")) {
             // 雷暴
-            resourceId = R.drawable.ic_sunny;
+            resourceId = R.drawable.ic_stormy;
         } else if (iconCode.contains("13")) {
             // 雪
-            resourceId = R.drawable.ic_sunny;
+            resourceId = R.drawable.ic_snowy;
         } else if (iconCode.contains("50")) {
             // 雾
-            resourceId = R.drawable.ic_sunny;
+            resourceId = R.drawable.ic_foggy;
         } else {
             // 未知天气
             resourceId = R.drawable.ic_unknown;
@@ -777,7 +784,8 @@ public class MainActivity extends AppCompatActivity {
             }
             
             Log.d(TAG, "Original forecast items: " + forecastItems.size() + ", Filtered items: " + filteredForecastItems.size());
-            forecastAdapter.updateData(filteredForecastItems);
+            // 使用按天分的适配器更新数据
+            dayGroupedForecastAdapter.updateData(filteredForecastItems);
         }
     }
     
@@ -792,8 +800,21 @@ public class MainActivity extends AppCompatActivity {
             refreshButton.setVisibility(View.GONE);
         }
         
-        // 请求位置权限并刷新天气数据
-        requestLocationPermission();
+        // 更新最后更新时间文本为"更新于"
+        String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
+        lastUpdatedTextView.setText("更新于: " + currentTime);
+        preferencesHelper.saveLastUpdateTime(System.currentTimeMillis());
+        
+        // 直接使用缓存的位置刷新天气数据，不重新请求位置权限
+        if (preferencesHelper.hasCachedLocation()) {
+            double cachedLatitude = preferencesHelper.getLatitude();
+            double cachedLongitude = preferencesHelper.getLongitude();
+            Log.d(TAG, "Refreshing weather data with cached location: " + cachedLatitude + ", " + cachedLongitude);
+            weatherViewModel.fetchLocationAndWeatherData(cachedLatitude, cachedLongitude);
+        } else {
+            // 如果没有缓存位置，才请求位置权限
+            requestLocationPermission();
+        }
     }
 
     // 请求位置权限

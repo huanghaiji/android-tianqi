@@ -13,10 +13,10 @@ public interface WeatherApiService {
     // 请访问 https://openweathermap.org/api 注册并获取您自己的API密钥
     String API_KEY = "88867313124dee5e37406ac03d6d5a92";
     // 注意：在实际项目中，应该使用安全的方式存储API密钥，如环境变量或密钥库
-    String BASE_URL = "https://api.openweathermap.org/data/2.5/";
+    String BASE_URL = "https://api.openweathermap.org/";
 
     // 获取当前天气数据
-    @GET("weather")
+    @GET("data/2.5/weather")
     Call<CurrentWeather> getCurrentWeather(
             @Query("lat") double latitude,
             @Query("lon") double longitude,
@@ -24,7 +24,7 @@ public interface WeatherApiService {
     );
 
     // 获取5天天气预报数据，每3小时更新一次
-    @GET("forecast")
+    @GET("data/2.5/forecast")
     Call<ForecastWeather> getForecastWeather(
             @Query("lat") double latitude,
             @Query("lon") double longitude,
@@ -32,7 +32,7 @@ public interface WeatherApiService {
     );
 
     // 反向地理编码（通过经纬度获取位置信息）
-    @GET("weather")
+    @GET("data/2.5/weather")
     Call<CurrentWeather> getLocationInfo(
             @Query("lat") double latitude,
             @Query("lon") double longitude,
@@ -40,7 +40,7 @@ public interface WeatherApiService {
     );
 
     // 正确的反向地理编码API（使用OpenWeatherMap的地理编码API）
-    @GET("http://api.openweathermap.org/geo/1.0/reverse")
+    @GET("geo/1.0/reverse")
     Call<ReverseGeocodingResponse[]> getReverseGeocodingInfo(
             @Query("lat") double latitude,
             @Query("lon") double longitude,
