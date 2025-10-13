@@ -54,9 +54,17 @@ public class WeatherViewModel extends AndroidViewModel {
         return locationCityName;
     }
 
-    // 直接获取天气数据（原有方法保持不变）
+    // 直接获取天气数据（添加参数控制是否设置加载状态）
     public void fetchWeatherData(double latitude, double longitude) {
-        isLoading.setValue(true);
+        // 默认为true，表示初始加载时设置加载状态
+        fetchWeatherData(latitude, longitude, true);
+    }
+    
+    // 重载方法，允许控制是否设置加载状态
+    public void fetchWeatherData(double latitude, double longitude, boolean setLoadingState) {
+        if (setLoadingState) {
+            isLoading.setValue(true);
+        }
         error.setValue(null);
 
         // 获取当前天气数据
@@ -102,7 +110,7 @@ public class WeatherViewModel extends AndroidViewModel {
 
     // 先获取位置信息，再获取天气数据（新方法）
     public void fetchLocationAndWeatherData(final double latitude, final double longitude) {
-        isLoading.setValue(true);
+        // 不设置isLoading为true，保持天气页面可见
         error.setValue(null);
 
         // 先使用正确的反向地理编码API获取位置信息
@@ -118,20 +126,20 @@ public class WeatherViewModel extends AndroidViewModel {
                     // 更新城市名称
                     locationCityName.setValue(realCityName);
                     
-                    // 然后获取天气数据
-                    fetchWeatherData(latitude, longitude);
+                    // 然后获取天气数据，不设置加载状态
+                    fetchWeatherData(latitude, longitude, false);
                 } else {
                     Log.e(TAG, "Reverse geocoding error: " + response.message());
-                    // 即使获取位置信息失败，也继续获取天气数据
-                    fetchWeatherData(latitude, longitude);
+                    // 即使获取位置信息失败，也继续获取天气数据，不设置加载状态
+                    fetchWeatherData(latitude, longitude, false);
                 }
             }
 
             @Override
             public void onFailure(Call<ReverseGeocodingResponse[]> call, Throwable t) {
                 Log.e(TAG, "Reverse geocoding network error: " + t.getMessage());
-                // 即使获取位置信息失败，也继续获取天气数据
-                fetchWeatherData(latitude, longitude);
+                // 即使获取位置信息失败，也继续获取天气数据，不设置加载状态
+                fetchWeatherData(latitude, longitude, false);
             }
         });
     }
