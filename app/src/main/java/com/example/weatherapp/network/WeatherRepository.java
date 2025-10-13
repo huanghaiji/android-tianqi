@@ -2,6 +2,7 @@ package com.example.weatherapp.network;
 
 import com.example.weatherapp.model.CurrentWeather;
 import com.example.weatherapp.model.ForecastWeather;
+import com.example.weatherapp.model.ReverseGeocodingResponse;
 
 import retrofit2.Call;
 import retrofit2.Retrofit;
@@ -37,5 +38,15 @@ public class WeatherRepository {
     // 获取天气预报数据
     public Call<ForecastWeather> getForecastWeather(double latitude, double longitude) {
         return weatherApiService.getForecastWeather(latitude, longitude, WeatherApiService.API_KEY);
+    }
+
+    // 获取位置信息（通过经纬度获取城市名称等）
+    public Call<CurrentWeather> getLocationInfo(double latitude, double longitude) {
+        return weatherApiService.getLocationInfo(latitude, longitude, WeatherApiService.API_KEY);
+    }
+
+    // 获取反向地理编码信息
+    public Call<ReverseGeocodingResponse[]> getReverseGeocodingInfo(double latitude, double longitude) {
+        return weatherApiService.getReverseGeocodingInfo(latitude, longitude, 1, WeatherApiService.API_KEY);
     }
 }

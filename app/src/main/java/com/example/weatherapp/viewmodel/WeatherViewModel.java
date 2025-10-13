@@ -10,6 +10,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.weatherapp.model.CurrentWeather;
 import com.example.weatherapp.model.ForecastWeather;
+import com.example.weatherapp.model.ReverseGeocodingResponse;
 import com.example.weatherapp.network.WeatherApiService;
 import com.example.weatherapp.network.WeatherRepository;
 
@@ -25,6 +26,7 @@ public class WeatherViewModel extends AndroidViewModel {
     private MutableLiveData<ForecastWeather> forecastWeather = new MutableLiveData<>();
     private MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
     private MutableLiveData<String> error = new MutableLiveData<>();
+    private MutableLiveData<String> locationCityName = new MutableLiveData<>();
 
     public WeatherViewModel(@NonNull Application application) {
         super(application);
@@ -39,14 +41,20 @@ public class WeatherViewModel extends AndroidViewModel {
         return forecastWeather;
     }
 
-    public LiveData<Boolean> isLoading() {
+    public LiveData<Boolean> getIsLoading() {
         return isLoading;
     }
 
     public LiveData<String> getError() {
         return error;
     }
+    
+    // 获取反向地理编码得到的城市名称
+    public LiveData<String> getLocationCityName() {
+        return locationCityName;
+    }
 
+    // 直接获取天气数据（原有方法保持不变）
     public void fetchWeatherData(double latitude, double longitude) {
         isLoading.setValue(true);
         error.setValue(null);
@@ -88,6 +96,42 @@ public class WeatherViewModel extends AndroidViewModel {
                 error.setValue("网络错误: " + t.getMessage());
                 Log.e(TAG, "Forecast weather network error: " + t.getMessage());
                 isLoading.setValue(false);
+            }
+        });
+    }
+
+    // 先获取位置信息，再获取天气数据（新方法）
+    public void fetchLocationAndWeatherData(final double latitude, final double longitude) {
+        isLoading.setValue(true);
+        error.setValue(null);
+
+        // 先使用正确的反向地理编码API获取位置信息
+        weatherRepository.getReverseGeocodingInfo(latitude, longitude).enqueue(new Callback<ReverseGeocodingResponse[]>() {
+            @Override
+            public void onResponse(Call<ReverseGeocodingResponse[]> call, Response<ReverseGeocodingResponse[]> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().length > 0) {
+                    // 获取到了真实的位置信息
+                    ReverseGeocodingResponse locationInfo = response.body()[0];
+                    String realCityName = locationInfo.getCityName();
+                    Log.d(TAG, "Got real location info: " + realCityName + ", " + locationInfo.getCountry());
+                    
+                    // 更新城市名称
+                    locationCityName.setValue(realCityName);
+                    
+                    // 然后获取天气数据
+                    fetchWeatherData(latitude, longitude);
+                } else {
+                    Log.e(TAG, "Reverse geocoding error: " + response.message());
+                    // 即使获取位置信息失败，也继续获取天气数据
+                    fetchWeatherData(latitude, longitude);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ReverseGeocodingResponse[]> call, Throwable t) {
+                Log.e(TAG, "Reverse geocoding network error: " + t.getMessage());
+                // 即使获取位置信息失败，也继续获取天气数据
+                fetchWeatherData(latitude, longitude);
             }
         });
     }

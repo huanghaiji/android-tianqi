@@ -2,6 +2,7 @@ package com.example.weatherapp.network;
 
 import com.example.weatherapp.model.CurrentWeather;
 import com.example.weatherapp.model.ForecastWeather;
+import com.example.weatherapp.model.ReverseGeocodingResponse;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -27,6 +28,23 @@ public interface WeatherApiService {
     Call<ForecastWeather> getForecastWeather(
             @Query("lat") double latitude,
             @Query("lon") double longitude,
+            @Query("appid") String apiKey
+    );
+
+    // 反向地理编码（通过经纬度获取位置信息）
+    @GET("weather")
+    Call<CurrentWeather> getLocationInfo(
+            @Query("lat") double latitude,
+            @Query("lon") double longitude,
+            @Query("appid") String apiKey
+    );
+
+    // 正确的反向地理编码API（使用OpenWeatherMap的地理编码API）
+    @GET("http://api.openweathermap.org/geo/1.0/reverse")
+    Call<ReverseGeocodingResponse[]> getReverseGeocodingInfo(
+            @Query("lat") double latitude,
+            @Query("lon") double longitude,
+            @Query("limit") int limit,
             @Query("appid") String apiKey
     );
 }
