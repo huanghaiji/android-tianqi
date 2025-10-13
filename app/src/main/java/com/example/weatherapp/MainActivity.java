@@ -3,7 +3,10 @@ package com.example.weatherapp;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -13,15 +16,18 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -33,9 +39,12 @@ import com.example.weatherapp.viewmodel.WeatherViewModel;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
+import com.squareup.picasso.Picasso;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "WeatherApp";
@@ -66,6 +75,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // 实现沉浸式设计
+        setupImmersiveMode();
+        
+        // 在super.onCreate之前设置主题模式
+        setThemeBasedOnTime();
+        
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -133,6 +148,68 @@ public class MainActivity extends AppCompatActivity {
         // 请求位置权限并获取天气数据
         requestLocationPermission();
     }
+    
+    /**
+     * 设置沉浸式模式，隐藏标题栏并确保内容不与状态栏重叠
+     */
+    private void setupImmersiveMode() {
+        // 隐藏标题栏
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
+        
+        // 设置状态栏为透明
+        getWindow().setStatusBarColor(Color.TRANSPARENT);
+        
+        // 设置导航栏为透明
+        getWindow().setNavigationBarColor(Color.TRANSPARENT);
+        
+        // 控制系统UI可见性
+        getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
+                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
+                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+        );
+        
+        // 对于Android R及以上版本，使用WindowInsetsController
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            android.view.WindowInsetsController insetsController = getWindow().getInsetsController();
+            if (insetsController != null) {
+                insetsController.setSystemBarsAppearance(
+                        android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS,
+                        android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
+                );
+            }
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            // 对于Android M到Android Q版本
+            getWindow().getDecorView().setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
+                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
+                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
+                    View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+            );
+        }
+    }
+    
+    /**
+     * 根据当前时间设置应用的日/夜间模式
+     * 设置在早上6点到晚上7点之间为白天模式，其他时间为夜间模式
+     */
+    private void setThemeBasedOnTime() {
+        Calendar calendar = Calendar.getInstance();
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        
+        // 早上6点到晚上7点为白天模式，其他时间为夜间模式
+        if (hour >= 6 && hour < 19) {
+            // 白天模式
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            Log.d(TAG, "设置为白天模式");
+        } else {
+            // 夜间模式
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            Log.d(TAG, "设置为夜间模式");
+        }
+    }
 
     private void initLocationListener() {
         locationListener = new LocationListener() {
@@ -178,10 +255,10 @@ public class MainActivity extends AppCompatActivity {
      * 验证位置是否足够准确
      */
     private boolean isLocationAccurate(Location location) {
-        // 检查位置是否足够新（10分钟内）且足够准确（精度小于20米）
+        // 降低精度要求，提高获取成功率
         long timeDelta = System.currentTimeMillis() - location.getTime();
-        boolean isRecent = timeDelta < 10 * 60 * 1000; // 10分钟
-        boolean isAccurate = location.getAccuracy() < 20; // 20米精度
+        boolean isRecent = timeDelta < 15 * 60 * 1000; // 延长到15分钟
+        boolean isAccurate = location.getAccuracy() < 50; // 放宽到50米精度
         Log.d(TAG, "Location validation - Recent: " + isRecent + ", Accurate: " + isAccurate + ", Age: " + (timeDelta/1000) + "s, Accuracy: " + location.getAccuracy() + "m");
         return location != null && isRecent && isAccurate;
     }
@@ -234,11 +311,72 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         
-        // 设置15秒后自动停止位置更新（以防长时间获取不到位置）
+        // 设置25秒后自动停止位置更新（延长超时时间）
         locationTimeoutHandler.postDelayed(() -> {
             stopLocationUpdates();
-            Toast.makeText(MainActivity.this, "定位超时，请检查位置服务设置", Toast.LENGTH_LONG).show();
-        }, 15000);
+            // 先尝试使用较低精度的位置（如果有）
+            useLastKnownLocationWithLowerAccuracy();
+        }, 25000);
+    }
+    
+    /**
+     * 当定位超时时，尝试使用较低精度要求的最后已知位置
+     */
+    private void useLastKnownLocationWithLowerAccuracy() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && 
+            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        
+        Location lastLocation = null;
+        
+        // 尝试获取任何可用的位置提供者的最后已知位置
+        List<String> providers = locationManager.getProviders(true);
+        for (String provider : providers) {
+            try {
+                Location tempLocation = locationManager.getLastKnownLocation(provider);
+                if (tempLocation != null) {
+                    // 使用时间更接近现在的位置
+                    if (lastLocation == null || tempLocation.getTime() > lastLocation.getTime()) {
+                        lastLocation = tempLocation;
+                    }
+                }
+            } catch (SecurityException e) {
+                Log.e(TAG, "Security exception when getting last known location for " + provider, e);
+            }
+        }
+        
+        if (lastLocation != null) {
+            // 降低精度要求，使用可用的最佳位置
+            long timeDelta = System.currentTimeMillis() - lastLocation.getTime();
+            boolean isAcceptable = timeDelta < 30 * 60 * 1000; // 30分钟内的位置
+            
+            if (isAcceptable) {
+                double latitude = lastLocation.getLatitude();
+                double longitude = lastLocation.getLongitude();
+                Log.d(TAG, "Using lower accuracy location: " + latitude + ", " + longitude + ", Accuracy: " + lastLocation.getAccuracy() + "m, Provider: " + lastLocation.getProvider());
+                weatherViewModel.fetchWeatherData(latitude, longitude);
+                Toast.makeText(this, "使用最近的位置估算天气信息", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+        
+        // 如果没有可用位置，提示用户并提供默认位置作为备选
+        Toast.makeText(MainActivity.this, "定位超时，请手动刷新或检查位置服务设置", Toast.LENGTH_LONG).show();
+        
+        // 使用默认位置（北京）作为最后的备选方案
+        useDefaultLocation();
+    }
+    
+    /**
+     * 使用默认位置（北京）作为最后的备选方案
+     */
+    private void useDefaultLocation() {
+        double defaultLatitude = 39.9042;
+        double defaultLongitude = 116.4074;
+        Log.d(TAG, "Using default location (Beijing): " + defaultLatitude + ", " + defaultLongitude);
+        weatherViewModel.fetchWeatherData(defaultLatitude, defaultLongitude);
+        Toast.makeText(this, "正在加载北京的天气信息作为参考", Toast.LENGTH_SHORT).show();
     }
 
     private void getLocation() {
@@ -311,14 +449,25 @@ public class MainActivity extends AppCompatActivity {
         boolean isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         // 检查网络定位是否开启
         boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        // 检查被动定位是否开启
+        boolean isPassiveEnabled = locationManager.isProviderEnabled(LocationManager.PASSIVE_PROVIDER);
         
-        if (!isGpsEnabled && !isNetworkEnabled) {
+        Log.d(TAG, "Location providers status - GPS: " + isGpsEnabled + ", Network: " + isNetworkEnabled + ", Passive: " + isPassiveEnabled);
+        
+        if (!isGpsEnabled && !isNetworkEnabled && !isPassiveEnabled) {
             // 都没有开启，引导用户去设置
-            Toast.makeText(this, "请开启GPS或网络定位服务", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "请开启GPS或网络定位服务以获取准确天气信息", Toast.LENGTH_LONG).show();
             Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
             startActivity(intent);
         } else {
-            Log.d(TAG, "Location settings are satisfied: GPS=" + isGpsEnabled + ", Network=" + isNetworkEnabled);
+            Log.d(TAG, "Location settings are satisfied: GPS=" + isGpsEnabled + ", Network=" + isNetworkEnabled + ", Passive=" + isPassiveEnabled);
+            
+            // 提示用户定位提供者的状态
+            StringBuilder providerStatus = new StringBuilder("当前可用定位: ");
+            if (isGpsEnabled) providerStatus.append("GPS ");
+            if (isNetworkEnabled) providerStatus.append("网络 ");
+            if (isPassiveEnabled) providerStatus.append("被动");
+            Log.d(TAG, providerStatus.toString());
         }
     }
 
@@ -339,6 +488,9 @@ public class MainActivity extends AppCompatActivity {
                 getLocation();
             }
         }
+        
+        // 重新应用沉浸式模式设置
+        setupImmersiveMode();
     }
 
     private void updateWeatherUI(CurrentWeather weather) {
@@ -360,47 +512,76 @@ public class MainActivity extends AppCompatActivity {
         String currentTime = sdf.format(new Date());
         lastUpdatedTextView.setText("最后更新: " + currentTime);
 
-        // 根据天气条件设置图标（简单实现，实际项目中可以使用更复杂的图标系统）
+        // 根据天气条件设置图标
         String weatherIcon = weather.getWeather().get(0).getIcon();
-        // 这里可以使用Picasso加载天气图标
-        // Picasso.get().load("http://openweathermap.org/img/wn/" + weatherIcon + "@2x.png").into(weatherIconImageView);
-        // 为了演示，根据天气条件设置不同的图标
-        switch (weatherIcon) {
-            case "01d":
-            case "01n":
-                weatherIconImageView.setImageResource(R.drawable.ic_sunny);
-                break;
-            case "02d":
-            case "02n":
-                weatherIconImageView.setImageResource(R.drawable.ic_partly_cloudy);
-                break;
-            case "03d":
-            case "03n":
-            case "04d":
-            case "04n":
-                weatherIconImageView.setImageResource(R.drawable.ic_cloudy);
-                break;
-            case "09d":
-            case "09n":
-            case "10d":
-            case "10n":
-                weatherIconImageView.setImageResource(R.drawable.ic_rainy);
-                break;
-            case "11d":
-            case "11n":
-                weatherIconImageView.setImageResource(R.drawable.ic_stormy);
-                break;
-            case "13d":
-            case "13n":
-                weatherIconImageView.setImageResource(R.drawable.ic_snowy);
-                break;
-            case "50d":
-            case "50n":
-                weatherIconImageView.setImageResource(R.drawable.ic_foggy);
-                break;
-            default:
-                weatherIconImageView.setImageResource(R.drawable.ic_unknown);
+        Log.d(TAG, "Weather icon code: " + weatherIcon);
+        
+        // 构建图标URL
+        String iconUrl = "https://openweathermap.org/img/wn/" + weatherIcon + "@4x.png";
+        Log.d(TAG, "Loading icon from URL: " + iconUrl);
+        
+        // 使用Picasso加载图标，并添加错误处理
+        Picasso.get()
+            .load(iconUrl)
+            .placeholder(R.drawable.ic_sunny) // 设置加载中的占位图
+            .error(R.drawable.ic_unknown) // 设置加载失败的错误图
+            .into(weatherIconImageView, new com.squareup.picasso.Callback() {
+                @Override
+                public void onSuccess() {
+                    Log.d(TAG, "Weather icon loaded successfully");
+                    // 确保图标颜色在白天模式下正确显示
+                    int currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+                    if (currentHour >= 6 && currentHour < 19) {
+                        // 白天模式 - 确保图标不透明且颜色正确
+                        weatherIconImageView.setColorFilter(null); // 清除任何颜色滤镜
+                    }
+                }
+                
+                @Override
+                public void onError(Exception e) {
+                    Log.e(TAG, "Failed to load weather icon: " + e.getMessage());
+                    // 如果网络加载失败，尝试使用本地图标
+                    useLocalWeatherIcon(weatherIcon);
+                }
+            });
+    }
+    
+    /**
+     * 使用本地天气图标资源作为备选
+     */
+    private void useLocalWeatherIcon(String iconCode) {
+        Log.d(TAG, "Using local weather icon for code: " + iconCode);
+        
+        // 根据OpenWeatherMap的图标代码映射到本地资源
+        int resourceId;
+        
+        if (iconCode.contains("01")) {
+            // 晴天
+            resourceId = R.drawable.ic_sunny;
+        } else if (iconCode.contains("02") || iconCode.contains("03") || iconCode.contains("04")) {
+            // 多云系列
+            resourceId = R.drawable.ic_sunny;
+        } else if (iconCode.contains("09") || iconCode.contains("10")) {
+            // 雨
+            resourceId = R.drawable.ic_sunny;
+        } else if (iconCode.contains("11")) {
+            // 雷暴
+            resourceId = R.drawable.ic_sunny;
+        } else if (iconCode.contains("13")) {
+            // 雪
+            resourceId = R.drawable.ic_sunny;
+        } else if (iconCode.contains("50")) {
+            // 雾
+            resourceId = R.drawable.ic_sunny;
+        } else {
+            // 未知天气
+            resourceId = R.drawable.ic_unknown;
         }
+        
+        // 设置本地图标
+        weatherIconImageView.setImageResource(resourceId);
+        // 确保图标颜色正确
+        weatherIconImageView.setColorFilter(null);
     }
 
     private void updateForecastUI(List<ForecastWeather.ForecastItem> forecastItems) {

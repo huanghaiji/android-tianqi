@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 主色调 - 夜间模式 -->
+    <color name="primary_color">#2979FF</color>
+    <color name="primary_dark_color">#304FFE</color>
+    <color name="accent_color">#FF6E40</color>
+
+    <!-- 文字颜色 - 夜间模式 -->
+    <color name="text_primary_color">#FFFFFF</color>
+    <color name="text_secondary_color">#B3FFFFFF</color>
+
+    <!-- 背景颜色 - 夜间模式 -->
+    <color name="window_background">#0D1117</color>
+    <color name="card_background">#161B22</color>
+
+    <!-- 天气相关颜色 - 夜间模式 -->
+    <color name="sunny_color">#FFD54F</color>
+    <color name="cloudy_color">#7986CB</color>
+    <color name="rainy_color">#42A5F5</color>
+    <color name="stormy_color">#5C6BC0</color>
+    <color name="snowy_color">#BBDEFB</color>
+    <color name="foggy_color">#90A4AE</color>
+
+    <!-- 状态颜色 - 夜间模式 -->
+    <color name="success_color">#43A047</color>
+    <color name="warning_color">#FDD835</color>
+    <color name="error_color">#E53935</color>
+    <color name="info_color">#1E88E5</color>
+
+    <!-- 透明度颜色 - 夜间模式 -->
+    <color name="transparent">#00000000</color>
+    <color name="black_50">#80000000</color>
+    <color name="white_50">#80FFFFFF</color>
+</resources>

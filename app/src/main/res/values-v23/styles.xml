@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- API 23+特有的样式定义 -->
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- 仅在API 23+可用的状态栏相关设置 -->
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+</resources>

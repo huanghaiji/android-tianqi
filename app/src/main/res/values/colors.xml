@@ -5,13 +5,13 @@
     <color name="primary_dark_color">#1976D2</color>
     <color name="accent_color">#FF5722</color>
 
-    <!-- 文字颜色 -->
-    <color name="text_primary_color">#FFFFFF</color>
-    <color name="text_secondary_color">#B3FFFFFF</color>
+    <!-- 文字颜色 - 白天模式使用深色文字 -->
+    <color name="text_primary_color">#212121</color>
+    <color name="text_secondary_color">#757575</color>
 
-    <!-- 背景颜色 -->
-    <color name="window_background">#121212</color>
-    <color name="card_background">#37474F</color>
+    <!-- 背景颜色 - 白天模式使用浅色背景 -->
+    <color name="window_background">#F5F5F5</color>
+    <color name="card_background">#FFFFFF</color>
 
     <!-- 天气相关颜色 -->
     <color name="sunny_color">#FFD54F</color>
@@ -20,6 +20,16 @@
     <color name="stormy_color">#5C6BC0</color>
     <color name="snowy_color">#E1F5FE</color>
     <color name="foggy_color">#B0BEC5</color>
+    
+    <!-- 温度相关颜色 -->
+    <color name="cold_color">#2196F3</color> <!-- 蓝色系，代表低温 -->
+    <color name="hot_color">#FF5722</color> <!-- 红色系，代表高温 -->
+    
+    <!-- 温度渐变颜色 -->
+    <color name="cool_color_start">#4CAF50</color> <!-- 绿色渐变开始，代表降温 -->
+    <color name="cool_color_end">#8BC34A</color>   <!-- 绿色渐变结束，代表降温 -->
+    <color name="hot_color_start">#FF9800</color>  <!-- 红色渐变开始，代表升温 -->
+    <color name="hot_color_end">#F44336</color>    <!-- 红色渐变结束，代表升温 -->
 
     <!-- 状态颜色 -->
     <color name="success_color">#4CAF50</color>

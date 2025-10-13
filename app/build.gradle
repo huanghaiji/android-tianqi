@@ -26,6 +26,16 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    
+    // 配置lint选项忽略特定类型的警告
+    lint {
+        // 忽略硬编码字符串警告
+        disable 'HardcodedText'
+        // 忽略默认区域设置警告
+        disable 'DefaultLocale'
+        // 将警告视为错误（如果需要）
+        warningsAsErrors false
+    }
 }
 
 dependencies {
@@ -36,6 +46,9 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-livedata:2.6.2'
     implementation 'androidx.lifecycle:lifecycle-viewmodel:2.6.2'
     implementation 'androidx.recyclerview:recyclerview:1.3.0'
+    implementation 'androidx.core:core:1.12.0'
+    // 添加AndroidX版本的exifinterface，替换不兼容的support库版本
+    implementation 'androidx.exifinterface:exifinterface:1.3.6'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
@@ -44,5 +57,8 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     implementation 'com.squareup.okhttp3:okhttp:4.12.0'
-    implementation 'com.squareup.picasso:picasso:2.71828'
+    // 排除Picasso中的旧版support库依赖，解决与AndroidX的冲突
+    implementation ('com.squareup.picasso:picasso:2.71828') {
+        exclude group: 'com.android.support'
+    }
 }

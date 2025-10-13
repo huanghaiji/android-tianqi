@@ -24,6 +24,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="16dp"
+        android:paddingTop="32dp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -49,7 +50,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:text="加载中..."
-                    android:textColor="#FFFFFF"
+                    android:textColor="@color/text_primary_color"
                     android:textSize="24sp"
                     android:textStyle="bold" />
 
@@ -60,7 +61,7 @@
                     android:layout_alignParentEnd="true"
                     android:background="@drawable/ic_refresh"
                     android:onClick="refreshWeather"
-                    android:tint="#FFFFFF" />
+                    android:tint="@color/text_primary_color" />
             </RelativeLayout>
 
             <!-- 当前天气卡片 -->
@@ -96,7 +97,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:text="0°C"
-                        android:textColor="#FFFFFF"
+                        android:textColor="@color/text_primary_color"
                         android:textSize="48sp"
                         android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="@+id/weather_icon"
@@ -110,8 +111,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:text="晴朗"
-                        android:textColor="#FFFFFF"
-                        android:textSize="18sp"
+                        android:textColor="@color/text_primary_color"
+                        android:textSize="20sp"
                         app:layout_constraintStart_toStartOf="@+id/weather_icon"
                         app:layout_constraintTop_toBottomOf="@+id/weather_icon" />
 
@@ -140,7 +141,7 @@
                                 android:layout_width="24dp"
                                 android:layout_height="24dp"
                                 android:src="@drawable/ic_humidity"
-                                app:tint="#FFFFFF" />
+                                app:tint="@color/text_secondary_color" />
 
                             <TextView
                                 android:id="@+id/humidity_label"
@@ -149,7 +150,7 @@
                                 android:layout_marginStart="8dp"
                                 android:layout_toEndOf="@+id/humidity_icon"
                                 android:text="湿度"
-                                android:textColor="#FFFFFF"
+                                android:textColor="@color/text_secondary_color"
                                 android:textSize="14sp" />
 
                             <TextView
@@ -160,7 +161,7 @@
                                 android:layout_marginStart="8dp"
                                 android:layout_toEndOf="@+id/humidity_icon"
                                 android:text="0%"
-                                android:textColor="#FFFFFF"
+                                android:textColor="@color/text_primary_color"
                                 android:textSize="16sp"
                                 android:textStyle="bold" />
                         </RelativeLayout>
@@ -178,7 +179,7 @@
                                 android:layout_width="24dp"
                                 android:layout_height="24dp"
                                 android:src="@drawable/ic_wind"
-                                app:tint="#FFFFFF" />
+                                app:tint="@color/text_secondary_color" />
 
                             <TextView
                                 android:id="@+id/wind_label"
@@ -187,7 +188,7 @@
                                 android:layout_marginStart="8dp"
                                 android:layout_toEndOf="@+id/wind_icon"
                                 android:text="风速"
-                                android:textColor="#FFFFFF"
+                                android:textColor="@color/text_secondary_color"
                                 android:textSize="14sp" />
 
                             <TextView
@@ -198,7 +199,7 @@
                                 android:layout_marginStart="8dp"
                                 android:layout_toEndOf="@+id/wind_icon"
                                 android:text="0 m/s"
-                                android:textColor="#FFFFFF"
+                                android:textColor="@color/text_primary_color"
                                 android:textSize="16sp"
                                 android:textStyle="bold" />
                         </RelativeLayout>
@@ -216,7 +217,7 @@
                                 android:layout_width="24dp"
                                 android:layout_height="24dp"
                                 android:src="@drawable/ic_pressure"
-                                />
+                                app:tint="@color/text_secondary_color" />
 
                             <TextView
                                 android:id="@+id/pressure_label"
@@ -225,7 +226,7 @@
                                 android:layout_marginStart="8dp"
                                 android:layout_toEndOf="@+id/pressure_icon"
                                 android:text="气压"
-                                android:textColor="#FFFFFF"
+                                android:textColor="@color/text_secondary_color"
                                 android:textSize="14sp" />
 
                             <TextView
@@ -236,7 +237,7 @@
                                 android:layout_marginStart="8dp"
                                 android:layout_toEndOf="@+id/pressure_icon"
                                 android:text="0 hPa"
-                                android:textColor="#FFFFFF"
+                                android:textColor="@color/text_primary_color"
                                 android:textSize="16sp"
                                 android:textStyle="bold" />
                         </RelativeLayout>
@@ -254,7 +255,7 @@
                                 android:layout_width="24dp"
                                 android:layout_height="24dp"
                                 android:src="@drawable/ic_feels_like"
-                                />
+                                app:tint="@color/text_secondary_color" />
 
                             <TextView
                                 android:id="@+id/feels_like_label"
@@ -263,7 +264,7 @@
                                 android:layout_marginStart="8dp"
                                 android:layout_toEndOf="@+id/feels_like_icon"
                                 android:text="体感温度"
-                                android:textColor="#FFFFFF"
+                                android:textColor="@color/text_secondary_color"
                                 android:textSize="14sp" />
 
                             <TextView
@@ -274,7 +275,7 @@
                                 android:layout_marginStart="8dp"
                                 android:layout_toEndOf="@+id/feels_like_icon"
                                 android:text="0°C"
-                                android:textColor="#FFFFFF"
+                                android:textColor="@color/text_primary_color"
                                 android:textSize="16sp"
                                 android:textStyle="bold" />
                         </RelativeLayout>
@@ -287,7 +288,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
                         android:text="最后更新: --"
-                        android:textColor="#FFFFFF"
+                        android:textColor="@color/text_secondary_color"
                         android:textSize="12sp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/weather_details" />
@@ -318,7 +319,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="5天天气预报"
-                        android:textColor="#FFFFFF"
+                        android:textColor="@color/text_primary_color"
                         android:textSize="18sp"
                         android:textStyle="bold"
                         app:layout_constraintStart_toStartOf="parent"
