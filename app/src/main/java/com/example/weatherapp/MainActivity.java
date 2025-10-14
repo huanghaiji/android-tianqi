@@ -784,8 +784,36 @@ public class MainActivity extends AppCompatActivity {
             }
             
             Log.d(TAG, "Original forecast items: " + forecastItems.size() + ", Filtered items: " + filteredForecastItems.size());
+            
+            // 保存RecyclerView的当前滚动位置
+            LinearLayoutManager layoutManager = (LinearLayoutManager) forecastRecyclerView.getLayoutManager();
+            final int[] scrollPosition = {0, 0}; // 使用数组作为容器来保存位置和偏移量，使其可以在内部类中访问
+            
+            if (layoutManager != null) {
+                scrollPosition[0] = layoutManager.findFirstVisibleItemPosition();
+                View firstVisibleItem = layoutManager.findViewByPosition(scrollPosition[0]);
+                if (firstVisibleItem != null) {
+                    // 计算第一个可见项的偏移量
+                    scrollPosition[1] = firstVisibleItem.getTop() - forecastRecyclerView.getPaddingTop();
+                }
+            }
+            
             // 使用按天分的适配器更新数据
             dayGroupedForecastAdapter.updateData(filteredForecastItems);
+            
+            // 恢复RecyclerView的滚动位置，确保用户手动滑动的位置保持不变
+            if (layoutManager != null && forecastRecyclerView.getAdapter() != null && 
+                forecastRecyclerView.getAdapter().getItemCount() > scrollPosition[0]) {
+                // 保存layoutManager的引用
+                final LinearLayoutManager finalLayoutManager = layoutManager;
+                // 使用post确保RecyclerView已经完成布局更新
+                forecastRecyclerView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        finalLayoutManager.scrollToPositionWithOffset(scrollPosition[0], scrollPosition[1]);
+                    }
+                });
+            }
         }
     }
     
