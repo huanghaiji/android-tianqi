@@ -53,6 +53,15 @@
                     android:textColor="@color/text_primary_color"
                     android:textSize="24sp"
                     android:textStyle="bold" />
+                     
+                <Button
+                    android:id="@+id/settings_button"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/ic_settings"
+                    android:contentDescription="设置" />
             </RelativeLayout>
 
             <!-- 当前天气卡片 -->

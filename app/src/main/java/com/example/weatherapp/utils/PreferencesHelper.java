@@ -11,6 +11,7 @@ public class PreferencesHelper {
     private static final String KEY_CITY_NAME = "city_name";
     private static final String KEY_HAS_CACHED_LOCATION = "has_cached_location";
     private static final String KEY_API_KEY = "api_key";
+    private static final String KEY_FIRST_LAUNCH = "first_launch";
 
     private final SharedPreferences sharedPreferences;
 
@@ -104,5 +105,17 @@ public class PreferencesHelper {
     public boolean hasApiKey() {
         String apiKey = getApiKey();
         return apiKey != null && !apiKey.isEmpty();
+    }
+
+    // 检查是否是首次启动应用
+    public boolean isFirstLaunch() {
+        return sharedPreferences.getBoolean(KEY_FIRST_LAUNCH, true);
+    }
+
+    // 设置首次启动标志为false（表示已经启动过）
+    public void setAppLaunched() {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(KEY_FIRST_LAUNCH, false);
+        editor.apply();
     }
 }

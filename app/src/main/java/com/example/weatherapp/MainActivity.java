@@ -24,6 +24,7 @@ import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -94,14 +95,19 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = getIntent();
         boolean skipApiKeyCheck = intent.getBooleanExtra("SKIP_API_KEY_CHECK", false);
         
-        // 如果没有缓存的API key且不是从设置页面跳转过来（没有跳过检查标记），则跳转到设置页面
-        if (!preferencesHelper.hasApiKey() && !skipApiKeyCheck) {
+        // 如果是首次启动应用且没有API Key，则跳转到设置页面
+        if (preferencesHelper.isFirstLaunch() && !preferencesHelper.hasApiKey() && !skipApiKeyCheck) {
             Intent settingsIntent = new Intent(MainActivity.this, SettingsActivity.class);
             startActivity(settingsIntent);
             finish();
             return;
         } else if (preferencesHelper.hasApiKey()) {
             Log.d(TAG, "Found cached API key");
+        }
+        
+        // 如果已经启动过应用（不是首次启动），标记应用已启动
+        if (preferencesHelper.isFirstLaunch() && skipApiKeyCheck) {
+            preferencesHelper.setAppLaunched();
         }
 
         // 初始化视图组件
@@ -117,6 +123,14 @@ public class MainActivity extends AppCompatActivity {
         lastUpdatedTextView = findViewById(R.id.last_updated);
         progressBar = findViewById(R.id.progress_bar);
         weatherContentLayout = findViewById(R.id.weather_content);
+        Button settingsButton = findViewById(R.id.settings_button);
+        settingsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                startActivity(intent);
+            }
+        });
         forecastRecyclerView = findViewById(R.id.forecast_recycler_view);
 
         // 初始化RecyclerView和Adapter

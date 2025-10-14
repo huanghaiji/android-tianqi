@@ -50,6 +50,9 @@ public class SettingsActivity extends AppCompatActivity {
                 // 保存API key到缓存
                 preferencesHelper.saveApiKey(apiKey);
                 
+                // 设置应用已启动标志，下次启动不再显示设置页面
+                preferencesHelper.setAppLaunched();
+                
                 // 跳转到天气页面
                 Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
                 startActivity(intent);
@@ -61,6 +64,9 @@ public class SettingsActivity extends AppCompatActivity {
         skipButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // 设置应用已启动标志，下次启动不再显示设置页面
+                preferencesHelper.setAppLaunched();
+                
                 // 直接跳转到天气页面，不保存API key
                 Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
                 // 添加标记，指示MainActivity跳过API Key检查
