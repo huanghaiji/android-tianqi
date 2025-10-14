@@ -13,12 +13,12 @@ import com.example.weatherapp.R;
 import java.util.ArrayList;
 import com.example.weatherapp.ForecastAdapter;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import com.example.weatherapp.utils.TimeUtils;
 
 /**
  * 按天分开展示天气预报的适配器
@@ -28,9 +28,6 @@ public class DayGroupedForecastAdapter extends RecyclerView.Adapter<DayGroupedFo
     private Context context;
     private Map<String, List<ForecastWeather.ForecastItem>> groupedForecasts = new HashMap<>();
     private List<String> sortedDates = new ArrayList<>();
-    private SimpleDateFormat dateParser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-    private SimpleDateFormat dateFormatter = new SimpleDateFormat("MM-dd EEEE", Locale.getDefault());
-    private SimpleDateFormat dayExtractor = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
     
     public DayGroupedForecastAdapter(Context context) {
         this.context = context;
@@ -46,15 +43,14 @@ public class DayGroupedForecastAdapter extends RecyclerView.Adapter<DayGroupedFo
         // 按日期分组
         for (ForecastWeather.ForecastItem forecast : forecastItems) {
             try {
-                Date forecastDate = dateParser.parse(forecast.getDt_txt());
-                String dayKey = dayExtractor.format(forecastDate);
+                String dayKey = TimeUtils.extractDate(forecast.getDt_txt());
                 
                 if (!groupedForecasts.containsKey(dayKey)) {
                     groupedForecasts.put(dayKey, new ArrayList<>());
                     sortedDates.add(dayKey);
                 }
                 groupedForecasts.get(dayKey).add(forecast);
-            } catch (ParseException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -76,9 +72,14 @@ public class DayGroupedForecastAdapter extends RecyclerView.Adapter<DayGroupedFo
         
         // 显示日期标题
         try {
-            Date date = dayExtractor.parse(dateKey);
-            holder.dateTitleTextView.setText(dateFormatter.format(date));
-        } catch (ParseException e) {
+            // 为了显示星期几，我们需要完整的日期时间字符串，这里我们从当天的第一个预报项中获取
+            if (!dayForecasts.isEmpty()) {
+                String formattedDate = TimeUtils.formatDateWithWeek(dayForecasts.get(0).getDt_txt());
+                holder.dateTitleTextView.setText(formattedDate);
+            } else {
+                holder.dateTitleTextView.setText(dateKey);
+            }
+        } catch (Exception e) {
             holder.dateTitleTextView.setText(dateKey);
         }
         

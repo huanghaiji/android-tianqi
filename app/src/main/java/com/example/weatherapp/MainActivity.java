@@ -4,9 +4,13 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
+import androidx.core.widget.NestedScrollView;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.weatherapp.utils.StatusBarUtils;
+import com.example.weatherapp.utils.ThemeUtils;
 
 import android.Manifest;
 import android.content.Context;
@@ -24,9 +28,11 @@ import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,6 +52,7 @@ import java.util.Locale;
 import com.example.weatherapp.utils.ImageLoader;
 import com.example.weatherapp.utils.PreferencesHelper;
 import com.example.weatherapp.utils.WeatherIconUtils;
+import com.example.weatherapp.utils.TimeUtils;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "WeatherApp";
@@ -73,20 +80,21 @@ public class MainActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private View weatherContentLayout;
     private RecyclerView forecastRecyclerView;
-    private ForecastAdapter forecastAdapter;
     private DayGroupedForecastAdapter dayGroupedForecastAdapter;
     private PreferencesHelper preferencesHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // 实现沉浸式设计
-        setupImmersiveMode();
-
         // 在super.onCreate之前设置主题模式
-        setThemeBasedOnTime();
+        ThemeUtils.setThemeBasedOnTime(this);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        // 实现沉浸式设计
+        StatusBarUtils.setupImmersiveMode(this);
+
+        // 应用状态栏高度的padding到顶部布局
+        StatusBarUtils.applyStatusBarPadding(this, R.id.top_bar);
 
         // 初始化PreferencesHelper并检查API key
         preferencesHelper = new PreferencesHelper(this);
@@ -124,18 +132,14 @@ public class MainActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progress_bar);
         weatherContentLayout = findViewById(R.id.weather_content);
         Button settingsButton = findViewById(R.id.settings_button);
-        settingsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-                startActivity(intent);
-            }
+        settingsButton.setOnClickListener(v -> {
+            Intent intent1 = new Intent(MainActivity.this, SettingsActivity.class);
+            startActivity(intent1);
         });
         forecastRecyclerView = findViewById(R.id.forecast_recycler_view);
 
         // 初始化RecyclerView和Adapter
         forecastRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        forecastAdapter = new ForecastAdapter(new ArrayList<>());
         dayGroupedForecastAdapter = new DayGroupedForecastAdapter(this);
         forecastRecyclerView.setAdapter(dayGroupedForecastAdapter);
 
@@ -209,63 +213,10 @@ public class MainActivity extends AppCompatActivity {
      * 设置沉浸式模式，隐藏标题栏并确保内容不与状态栏重叠
      */
     private void setupImmersiveMode() {
-        // 隐藏标题栏
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().hide();
-        }
-
-        // 设置状态栏为透明
-        getWindow().setStatusBarColor(Color.TRANSPARENT);
-
-        // 设置导航栏为透明
-        getWindow().setNavigationBarColor(Color.TRANSPARENT);
-
-        // 控制系统UI可见性
-        getWindow().getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
-                        View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
-                        View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-        );
-
-        // 对于Android R及以上版本，使用WindowInsetsController
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            android.view.WindowInsetsController insetsController = getWindow().getInsetsController();
-            if (insetsController != null) {
-                insetsController.setSystemBarsAppearance(
-                        android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS,
-                        android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
-                );
-            }
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            // 对于Android M到Android Q版本
-            getWindow().getDecorView().setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
-                            View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
-                            View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
-                            View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-            );
-        }
+        StatusBarUtils.setupImmersiveMode(this);
     }
 
-    /**
-     * 根据当前时间设置应用的日/夜间模式
-     * 设置在早上6点到晚上7点之间为白天模式，其他时间为夜间模式
-     */
-    private void setThemeBasedOnTime() {
-        Calendar calendar = Calendar.getInstance();
-        int hour = calendar.get(Calendar.HOUR_OF_DAY);
 
-        // 早上6点到晚上7点为白天模式，其他时间为夜间模式
-        if (hour >= 6 && hour < 19) {
-            // 白天模式
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-            Log.d(TAG, "设置为白天模式");
-        } else {
-            // 夜间模式
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-            Log.d(TAG, "设置为夜间模式");
-        }
-    }
 
     private void initLocationListener() {
         locationListener = new LocationListener() {
@@ -669,7 +620,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // 设置更新时间为"更新于"
-        String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
+        String currentTime = TimeUtils.formatCurrentTime();
         lastUpdatedTextView.setText("更新于: " + currentTime);
 
         // 隐藏刷新按钮
@@ -695,7 +646,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         // 切换为"最后更新"
-                        String time = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date(preferencesHelper.getLastUpdateTime()));
+                        String time = TimeUtils.formatTime(preferencesHelper.getLastUpdateTime());
                         lastUpdatedTextView.setText("最后更新: " + time);
 
                         // 显示刷新按钮
@@ -722,8 +673,7 @@ public class MainActivity extends AppCompatActivity {
             public void onSuccess() {
                 Log.d(TAG, "Weather icon loaded successfully");
                 // 确保图标颜色在白天模式下正确显示
-                int currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-                if (currentHour >= 6 && currentHour < 19) {
+                if (ThemeUtils.isDayTime()) {
                     // 白天模式 - 确保图标不透明且颜色正确
                     weatherIconImageView.setColorFilter(null); // 清除任何颜色滤镜
                 }
@@ -743,25 +693,19 @@ public class MainActivity extends AppCompatActivity {
     private void updateForecastUI(List<ForecastWeather.ForecastItem> forecastItems) {
         if (forecastItems != null && !forecastItems.isEmpty()) {
             // 过滤掉已过去的时间的天气预报项
-            List<ForecastWeather.ForecastItem> filteredForecastItems = new ArrayList<>();
-            long currentTimeMillis = System.currentTimeMillis();
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        List<ForecastWeather.ForecastItem> filteredForecastItems = new ArrayList<>();
 
-            for (ForecastWeather.ForecastItem item : forecastItems) {
-                try {
-                    // 将预报时间转换为毫秒时间戳
-                    Date forecastDate = dateFormat.parse(item.getDt_txt());
-                    long forecastTimeMillis = forecastDate.getTime();
-
-                    // 只保留时间未过去的预报项
-                    if (forecastTimeMillis >= currentTimeMillis) {
-                        filteredForecastItems.add(item);
-                    } else {
-                        Log.d(TAG, "Skipping past forecast: " + item.getDt_txt());
-                    }
-                } catch (ParseException e) {
-                    Log.e(TAG, "Error parsing forecast date: " + item.getDt_txt(), e);
-                    // 如果解析失败，默认添加该项
+        for (ForecastWeather.ForecastItem item : forecastItems) {
+            try {
+                // 只保留时间未过去的预报项
+                if (!TimeUtils.isForecastTimePast(item.getDt_txt())) {
+                    filteredForecastItems.add(item);
+                } else {
+                    Log.d(TAG, "Skipping past forecast: " + item.getDt_txt());
+                }
+                } catch (Exception e) {
+                    Log.e(TAG, "Error processing forecast item: " + item.getDt_txt(), e);
+                    // 如果处理失败，默认添加该项
                     filteredForecastItems.add(item);
                 }
             }
@@ -812,7 +756,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // 更新最后更新时间文本为"更新于"
-        String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
+        String currentTime = TimeUtils.formatCurrentTime();
         lastUpdatedTextView.setText("更新于: " + currentTime);
         preferencesHelper.saveLastUpdateTime(System.currentTimeMillis());
 

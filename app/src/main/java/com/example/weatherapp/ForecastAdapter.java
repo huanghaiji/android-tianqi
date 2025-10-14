@@ -6,7 +6,9 @@ import android.util.Log;
 
 // import com.squareup.picasso.Picasso;
 import com.example.weatherapp.utils.ImageLoader;
+import com.example.weatherapp.utils.ThemeUtils;
 import com.example.weatherapp.utils.WeatherIconUtils;
+import com.example.weatherapp.utils.TimeUtils;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -122,7 +124,7 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
 
         public void bind(ForecastWeather.ForecastItem forecastItem, double previousTemp, int position) {
             // 设置时间（格式化日期时间）
-            String formattedTime = formatDateTime(forecastItem.getDt_txt());
+            String formattedTime = TimeUtils.formatApiDateTime(forecastItem.getDt_txt());
             forecastTimeTextView.setText(formattedTime);
 
             // 设置天气描述
@@ -143,8 +145,7 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
                     public void onSuccess() {
                         Log.d(TAG, "Forecast icon loaded successfully: " + iconCode);
                         // 确保图标颜色在白天模式下正确显示
-                        int currentHour = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY);
-                        if (currentHour >= 6 && currentHour < 19) {
+                        if (ThemeUtils.isDayTime()) {
                             // 白天模式 - 确保图标不透明且颜色正确
                             forecastIconImageView.setColorFilter(null); // 清除任何颜色滤镜
                         }
@@ -187,17 +188,6 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
 
 
 
-        private String formatDateTime(String dateTimeStr) {
-            // 将API返回的日期时间格式（yyyy-MM-dd HH:mm:ss）转换为更友好的格式
-            try {
-                SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-                Date date = inputFormat.parse(dateTimeStr);
-                SimpleDateFormat outputFormat = new SimpleDateFormat("MM-dd HH:mm", Locale.getDefault());
-                return outputFormat.format(date);
-            } catch (ParseException e) {
-                e.printStackTrace();
-                return dateTimeStr;
-            }
-        }
+
     }
 }
