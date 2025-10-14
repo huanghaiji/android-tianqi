@@ -9,10 +9,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Query;
 
 public interface WeatherApiService {
-    // OpenWeatherMap API key示例 (这是一个格式正确的示例密钥，但不是真实有效的)
-    // 请访问 https://openweathermap.org/api 注册并获取您自己的API密钥
-    String API_KEY = "88867313124dee5e37406ac03d6d5a92";
-    // 注意：在实际项目中，应该使用安全的方式存储API密钥，如环境变量或密钥库
+    // 注意：API密钥应从安全的地方获取，如用户配置
     String BASE_URL = "https://api.openweathermap.org/";
 
     // 获取当前天气数据

@@ -13,6 +13,7 @@ import com.example.weatherapp.model.ForecastWeather;
 import com.example.weatherapp.model.ReverseGeocodingResponse;
 import com.example.weatherapp.network.WeatherApiService;
 import com.example.weatherapp.network.WeatherRepository;
+import com.example.weatherapp.utils.PreferencesHelper;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -21,6 +22,7 @@ import retrofit2.Response;
 public class WeatherViewModel extends AndroidViewModel {
     private static final String TAG = "WeatherViewModel";
     private WeatherRepository weatherRepository;
+    private PreferencesHelper preferencesHelper;
 
     private MutableLiveData<CurrentWeather> currentWeather = new MutableLiveData<>();
     private MutableLiveData<ForecastWeather> forecastWeather = new MutableLiveData<>();
@@ -31,6 +33,13 @@ public class WeatherViewModel extends AndroidViewModel {
     public WeatherViewModel(@NonNull Application application) {
         super(application);
         weatherRepository = WeatherRepository.getInstance();
+        preferencesHelper = new PreferencesHelper(application);
+        
+        // 设置API key到WeatherRepository
+        String apiKey = preferencesHelper.getApiKey();
+        if (apiKey != null && !apiKey.isEmpty()) {
+            weatherRepository.setApiKey(apiKey);
+        }
     }
 
     public LiveData<CurrentWeather> getCurrentWeather() {

@@ -87,6 +87,23 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // 初始化PreferencesHelper并检查API key
+        preferencesHelper = new PreferencesHelper(this);
+        
+        // 获取Intent，检查是否包含SKIP_API_KEY_CHECK标记
+        Intent intent = getIntent();
+        boolean skipApiKeyCheck = intent.getBooleanExtra("SKIP_API_KEY_CHECK", false);
+        
+        // 如果没有缓存的API key且不是从设置页面跳转过来（没有跳过检查标记），则跳转到设置页面
+        if (!preferencesHelper.hasApiKey() && !skipApiKeyCheck) {
+            Intent settingsIntent = new Intent(MainActivity.this, SettingsActivity.class);
+            startActivity(settingsIntent);
+            finish();
+            return;
+        } else if (preferencesHelper.hasApiKey()) {
+            Log.d(TAG, "Found cached API key");
+        }
+
         // 初始化视图组件
         cityNameTextView = findViewById(R.id.city_name);
         temperatureTextView = findViewById(R.id.temperature);
@@ -112,7 +129,6 @@ public class MainActivity extends AppCompatActivity {
         weatherViewModel = new ViewModelProvider(this).get(WeatherViewModel.class);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationTimeoutHandler = new Handler(Looper.getMainLooper());
-        preferencesHelper = new PreferencesHelper(this);
 
         // 初始化位置监听器
         initLocationListener();

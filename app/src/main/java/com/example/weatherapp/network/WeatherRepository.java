@@ -11,6 +11,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class WeatherRepository {
     private static WeatherRepository instance;
     private WeatherApiService weatherApiService;
+    private String apiKey;
 
     private WeatherRepository() {
         // 创建Retrofit实例
@@ -30,23 +31,37 @@ public class WeatherRepository {
         return instance;
     }
 
+    // 设置API key
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
+    }
+
+    // 获取API key（如果未设置则返回一个默认值）
+    public String getApiKey() {
+        if (apiKey == null || apiKey.isEmpty()) {
+            // 返回一个默认的示例API key，实际使用时应该从用户配置获取
+            return "88867313124dee5e37406ac03d6d5a92";
+        }
+        return apiKey;
+    }
+
     // 获取当前天气数据
     public Call<CurrentWeather> getCurrentWeather(double latitude, double longitude) {
-        return weatherApiService.getCurrentWeather(latitude, longitude, WeatherApiService.API_KEY);
+        return weatherApiService.getCurrentWeather(latitude, longitude, getApiKey());
     }
 
     // 获取天气预报数据
     public Call<ForecastWeather> getForecastWeather(double latitude, double longitude) {
-        return weatherApiService.getForecastWeather(latitude, longitude, WeatherApiService.API_KEY);
+        return weatherApiService.getForecastWeather(latitude, longitude, getApiKey());
     }
 
     // 获取位置信息（通过经纬度获取城市名称等）
     public Call<CurrentWeather> getLocationInfo(double latitude, double longitude) {
-        return weatherApiService.getLocationInfo(latitude, longitude, WeatherApiService.API_KEY);
+        return weatherApiService.getLocationInfo(latitude, longitude, getApiKey());
     }
 
     // 获取反向地理编码信息
     public Call<ReverseGeocodingResponse[]> getReverseGeocodingInfo(double latitude, double longitude) {
-        return weatherApiService.getReverseGeocodingInfo(latitude, longitude, 1, WeatherApiService.API_KEY);
+        return weatherApiService.getReverseGeocodingInfo(latitude, longitude, 1, getApiKey());
     }
 }

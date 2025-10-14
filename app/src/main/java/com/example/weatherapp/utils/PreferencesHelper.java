@@ -10,6 +10,7 @@ public class PreferencesHelper {
     private static final String KEY_LAST_UPDATE_TIME = "last_update_time";
     private static final String KEY_CITY_NAME = "city_name";
     private static final String KEY_HAS_CACHED_LOCATION = "has_cached_location";
+    private static final String KEY_API_KEY = "api_key";
 
     private final SharedPreferences sharedPreferences;
 
@@ -85,5 +86,23 @@ public class PreferencesHelper {
         long currentTime = System.currentTimeMillis();
         long timeDifference = currentTime - lastUpdateTime;
         return timeDifference > 5 * 60 * 1000; // 5分钟
+    }
+    
+    // 保存API key
+    public void saveApiKey(String apiKey) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(KEY_API_KEY, apiKey);
+        editor.apply();
+    }
+    
+    // 获取缓存的API key
+    public String getApiKey() {
+        return sharedPreferences.getString(KEY_API_KEY, "");
+    }
+    
+    // 检查是否有缓存的API key
+    public boolean hasApiKey() {
+        String apiKey = getApiKey();
+        return apiKey != null && !apiKey.isEmpty();
     }
 }
