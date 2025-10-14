@@ -6,6 +6,7 @@ import android.util.Log;
 
 // import com.squareup.picasso.Picasso;
 import com.example.weatherapp.utils.ImageLoader;
+import com.example.weatherapp.utils.WeatherIconUtils;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -137,7 +138,7 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
                 // 正常加载，会使用缓存
                 // 获取Context（从forecastIconImageView获取）
                 android.content.Context context = forecastIconImageView.getContext();
-                ImageLoader.getInstance(context).loadImage(iconUrl, forecastIconImageView, useLocalForecastIcon(iconCode), new ImageLoader.ImageLoadCallback() {
+                ImageLoader.getInstance(context).loadImage(iconUrl, forecastIconImageView, WeatherIconUtils.getLocalWeatherIcon(iconCode), new ImageLoader.ImageLoadCallback() {
                     @Override
                     public void onSuccess() {
                         Log.d(TAG, "Forecast icon loaded successfully: " + iconCode);
@@ -184,43 +185,7 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
             }
         }
 
-        /**
-         * 使用本地天气图标资源作为备选
-         */
-        private int useLocalForecastIcon(String iconCode) {
-            Log.d(TAG, "Using local forecast icon for code: " + iconCode);
 
-            // 根据OpenWeatherMap的图标代码映射到本地资源
-            int resourceId;
-
-            if (iconCode.contains("01")) {
-                // 晴天
-                resourceId = R.drawable.ic_sunny;
-            } else if (iconCode.contains("02")) {
-                // 少云
-                resourceId = R.drawable.ic_partly_cloudy;
-            } else if (iconCode.contains("03") || iconCode.contains("04")) {
-                // 多云系列
-                resourceId = R.drawable.ic_cloudy;
-            } else if (iconCode.contains("09") || iconCode.contains("10")) {
-                // 雨
-                resourceId = R.drawable.ic_rainy;
-            } else if (iconCode.contains("11")) {
-                // 雷暴
-                resourceId = R.drawable.ic_stormy;
-            } else if (iconCode.contains("13")) {
-                // 雪
-                resourceId = R.drawable.ic_snowy;
-            } else if (iconCode.contains("50")) {
-                // 雾
-                resourceId = R.drawable.ic_foggy;
-            } else {
-                // 未知天气
-                resourceId = R.drawable.ic_unknown;
-            }
-
-            return resourceId;
-        }
 
         private String formatDateTime(String dateTimeStr) {
             // 将API返回的日期时间格式（yyyy-MM-dd HH:mm:ss）转换为更友好的格式

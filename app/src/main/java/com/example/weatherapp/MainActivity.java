@@ -44,6 +44,7 @@ import java.util.Locale;
 // import com.squareup.picasso.Picasso;
 import com.example.weatherapp.utils.ImageLoader;
 import com.example.weatherapp.utils.PreferencesHelper;
+import com.example.weatherapp.utils.WeatherIconUtils;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "WeatherApp";
@@ -686,7 +687,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "Loading icon from URL: " + iconUrl);
 
         // 正常加载，会使用缓存
-        ImageLoader.getInstance(MainActivity.this).loadImage(iconUrl, weatherIconImageView, useLocalWeatherIcon(weatherIcon), new ImageLoader.ImageLoadCallback() {
+        ImageLoader.getInstance(MainActivity.this).loadImage(iconUrl, weatherIconImageView, WeatherIconUtils.getLocalWeatherIcon(weatherIcon), new ImageLoader.ImageLoadCallback() {
             @Override
             public void onSuccess() {
                 Log.d(TAG, "Weather icon loaded successfully");
@@ -707,43 +708,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * 使用本地天气图标资源作为备选
-     */
-    private int useLocalWeatherIcon(String iconCode) {
-        Log.d(TAG, "Using local weather icon for code: " + iconCode);
 
-        // 根据OpenWeatherMap的图标代码映射到本地资源
-        int resourceId;
-
-        if (iconCode.contains("01")) {
-            // 晴天
-            resourceId = R.drawable.ic_sunny;
-        } else if (iconCode.contains("02")) {
-            // 少云
-            resourceId = R.drawable.ic_partly_cloudy;
-        } else if (iconCode.contains("03") || iconCode.contains("04")) {
-            // 多云系列
-            resourceId = R.drawable.ic_cloudy;
-        } else if (iconCode.contains("09") || iconCode.contains("10")) {
-            // 雨
-            resourceId = R.drawable.ic_rainy;
-        } else if (iconCode.contains("11")) {
-            // 雷暴
-            resourceId = R.drawable.ic_stormy;
-        } else if (iconCode.contains("13")) {
-            // 雪
-            resourceId = R.drawable.ic_snowy;
-        } else if (iconCode.contains("50")) {
-            // 雾
-            resourceId = R.drawable.ic_foggy;
-        } else {
-            // 未知天气
-            resourceId = R.drawable.ic_unknown;
-        }
-
-        return resourceId;
-    }
 
     private void updateForecastUI(List<ForecastWeather.ForecastItem> forecastItems) {
         if (forecastItems != null && !forecastItems.isEmpty()) {
