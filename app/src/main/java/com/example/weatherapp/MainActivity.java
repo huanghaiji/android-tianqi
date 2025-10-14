@@ -47,7 +47,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import com.squareup.picasso.Picasso;
+// import com.squareup.picasso.Picasso;
+import com.example.weatherapp.utils.ImageLoader;
 import com.example.weatherapp.util.PreferencesHelper;
 
 public class MainActivity extends AppCompatActivity {
@@ -690,30 +691,26 @@ public class MainActivity extends AppCompatActivity {
         String iconUrl = "https://openweathermap.org/img/wn/" + weatherIcon + "@4x.png";
         Log.d(TAG, "Loading icon from URL: " + iconUrl);
         
-        // 使用Picasso加载图标，并添加错误处理
-        Picasso.get()
-            .load(iconUrl)
-            .placeholder(R.drawable.ic_sunny) // 设置加载中的占位图
-            .error(R.drawable.ic_unknown) // 设置加载失败的错误图
-            .into(weatherIconImageView, new com.squareup.picasso.Callback() {
-                @Override
-                public void onSuccess() {
-                    Log.d(TAG, "Weather icon loaded successfully");
-                    // 确保图标颜色在白天模式下正确显示
-                    int currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-                    if (currentHour >= 6 && currentHour < 19) {
-                        // 白天模式 - 确保图标不透明且颜色正确
-                        weatherIconImageView.setColorFilter(null); // 清除任何颜色滤镜
-                    }
+        // 正常加载，会使用缓存
+        ImageLoader.getInstance(MainActivity.this).loadImage(iconUrl, weatherIconImageView, new ImageLoader.ImageLoadCallback() {
+            @Override
+            public void onSuccess() {
+                Log.d(TAG, "Weather icon loaded successfully");
+                // 确保图标颜色在白天模式下正确显示
+                int currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+                if (currentHour >= 6 && currentHour < 19) {
+                    // 白天模式 - 确保图标不透明且颜色正确
+                    weatherIconImageView.setColorFilter(null); // 清除任何颜色滤镜
                 }
-                
-                @Override
-                public void onError(Exception e) {
-                    Log.e(TAG, "Failed to load weather icon: " + e.getMessage());
-                    // 如果网络加载失败，尝试使用本地图标
-                    useLocalWeatherIcon(weatherIcon);
-                }
-            });
+            }
+            
+            @Override
+            public void onError(Exception e) {
+                Log.e(TAG, "Failed to load weather icon: " + e.getMessage());
+                // 如果网络加载失败，尝试使用本地图标
+                useLocalWeatherIcon(weatherIcon);
+            }
+        });
     }
     
     /**

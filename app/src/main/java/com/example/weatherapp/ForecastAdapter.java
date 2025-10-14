@@ -4,7 +4,8 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.util.Log;
 
-import com.squareup.picasso.Picasso;
+// import com.squareup.picasso.Picasso;
+import com.example.weatherapp.utils.ImageLoader;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -133,30 +134,28 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
                 Log.d(TAG, "Loading forecast icon: " + iconCode);
                 String iconUrl = "https://openweathermap.org/img/wn/" + iconCode + "@3x.png";
 
-                // 使用Picasso加载图标，并添加错误处理
-                Picasso.get()
-                        .load(iconUrl)
-                        .placeholder(R.drawable.ic_sunny) // 设置加载中的占位图
-                        .error(R.drawable.ic_unknown) // 设置加载失败的错误图
-                        .into(forecastIconImageView, new com.squareup.picasso.Callback() {
-                            @Override
-                            public void onSuccess() {
-                                Log.d(TAG, "Forecast icon loaded successfully: " + iconCode);
-                                // 确保图标颜色在白天模式下正确显示
-                                int currentHour = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY);
-                                if (currentHour >= 6 && currentHour < 19) {
-                                    // 白天模式 - 确保图标不透明且颜色正确
-                                    forecastIconImageView.setColorFilter(null); // 清除任何颜色滤镜
-                                }
-                            }
+                // 正常加载，会使用缓存
+                // 获取Context（从forecastIconImageView获取）
+                android.content.Context context = forecastIconImageView.getContext();
+                ImageLoader.getInstance(context).loadImage(iconUrl, forecastIconImageView, new ImageLoader.ImageLoadCallback() {
+                    @Override
+                    public void onSuccess() {
+                        Log.d(TAG, "Forecast icon loaded successfully: " + iconCode);
+                        // 确保图标颜色在白天模式下正确显示
+                        int currentHour = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY);
+                        if (currentHour >= 6 && currentHour < 19) {
+                            // 白天模式 - 确保图标不透明且颜色正确
+                            forecastIconImageView.setColorFilter(null); // 清除任何颜色滤镜
+                        }
+                    }
 
-                            @Override
-                            public void onError(Exception e) {
-                                Log.e(TAG, "Failed to load forecast icon: " + e.getMessage());
-                                // 如果网络加载失败，尝试使用本地图标
-                                useLocalForecastIcon(iconCode);
-                            }
-                        });
+                    @Override
+                    public void onError(Exception e) {
+                        Log.e(TAG, "Failed to load forecast icon: " + e.getMessage());
+                        // 如果网络加载失败，尝试使用本地图标
+                        useLocalForecastIcon(iconCode);
+                    }
+                });
             }
 
             // 设置温度范围（开尔文转摄氏度）和进度条
