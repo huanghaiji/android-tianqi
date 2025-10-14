@@ -137,7 +137,7 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
                 // 正常加载，会使用缓存
                 // 获取Context（从forecastIconImageView获取）
                 android.content.Context context = forecastIconImageView.getContext();
-                ImageLoader.getInstance(context).loadImage(iconUrl, forecastIconImageView, new ImageLoader.ImageLoadCallback() {
+                ImageLoader.getInstance(context).loadImage(iconUrl, forecastIconImageView, useLocalForecastIcon(iconCode), new ImageLoader.ImageLoadCallback() {
                     @Override
                     public void onSuccess() {
                         Log.d(TAG, "Forecast icon loaded successfully: " + iconCode);
@@ -152,8 +152,7 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
                     @Override
                     public void onError(Exception e) {
                         Log.e(TAG, "Failed to load forecast icon: " + e.getMessage());
-                        // 如果网络加载失败，尝试使用本地图标
-                        useLocalForecastIcon(iconCode);
+                        onSuccess();
                     }
                 });
             }
@@ -162,7 +161,7 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
             if (forecastItem.getMain() != null) {
                 double tempMin = forecastItem.getMain().getTemp_min() - 273.15;
                 double tempMax = forecastItem.getMain().getTemp_max() - 273.15;
-                double tempCurr= forecastItem.getMain().getTemp() - 273.15;
+                double tempCurr = forecastItem.getMain().getTemp() - 273.15;
 
                 // 添加日志记录温度数据，便于调试
                 Log.d(TAG, "Forecast temperature for " + forecastItem.getDt_txt() + ": min=" + tempMin + ", max=" + tempMax);
@@ -188,7 +187,7 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
         /**
          * 使用本地天气图标资源作为备选
          */
-        private void useLocalForecastIcon(String iconCode) {
+        private int useLocalForecastIcon(String iconCode) {
             Log.d(TAG, "Using local forecast icon for code: " + iconCode);
 
             // 根据OpenWeatherMap的图标代码映射到本地资源
@@ -220,10 +219,7 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
                 resourceId = R.drawable.ic_unknown;
             }
 
-            // 设置本地图标
-            forecastIconImageView.setImageResource(resourceId);
-            // 确保图标颜色正确
-            forecastIconImageView.setColorFilter(null);
+            return resourceId;
         }
 
         private String formatDateTime(String dateTimeStr) {

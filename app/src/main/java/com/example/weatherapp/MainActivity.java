@@ -1,13 +1,9 @@
 package com.example.weatherapp;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -28,7 +24,6 @@ import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -37,7 +32,6 @@ import android.widget.Toast;
 import com.example.weatherapp.model.CurrentWeather;
 import com.example.weatherapp.model.ForecastWeather;
 import com.example.weatherapp.viewmodel.WeatherViewModel;
-import com.example.weatherapp.DayGroupedForecastAdapter;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -49,12 +43,12 @@ import java.util.Locale;
 
 // import com.squareup.picasso.Picasso;
 import com.example.weatherapp.utils.ImageLoader;
-import com.example.weatherapp.util.PreferencesHelper;
+import com.example.weatherapp.utils.PreferencesHelper;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "WeatherApp";
     private static final int REQUEST_LOCATION_PERMISSION = 1;
-    
+
     // 添加位置请求相关常量
     private static final int LOCATION_REQUEST_INTERVAL = 10000; // 10秒
     private static final int LOCATION_REQUEST_FASTEST_INTERVAL = 5000; // 5秒
@@ -85,10 +79,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         // 实现沉浸式设计
         setupImmersiveMode();
-        
+
         // 在super.onCreate之前设置主题模式
         setThemeBasedOnTime();
-        
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -106,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progress_bar);
         weatherContentLayout = findViewById(R.id.weather_content);
         forecastRecyclerView = findViewById(R.id.forecast_recycler_view);
-        
+
         // 初始化RecyclerView和Adapter
         forecastRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         forecastAdapter = new ForecastAdapter(new ArrayList<>());
@@ -118,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationTimeoutHandler = new Handler(Looper.getMainLooper());
         preferencesHelper = new PreferencesHelper(this);
-        
+
         // 初始化位置监听器
         initLocationListener();
 
@@ -148,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
                 weatherContentLayout.setVisibility(View.VISIBLE);
             }
         });
-        
+
         // 观察反向地理编码得到的城市名称
         weatherViewModel.getLocationCityName().observe(this, cityName -> {
             if (cityName != null && !cityName.isEmpty()) {
@@ -179,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
         // 请求位置权限并获取天气数据
         requestLocationPermission();
     }
-    
+
     /**
      * 设置沉浸式模式，隐藏标题栏并确保内容不与状态栏重叠
      */
@@ -188,20 +182,20 @@ public class MainActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
-        
+
         // 设置状态栏为透明
         getWindow().setStatusBarColor(Color.TRANSPARENT);
-        
+
         // 设置导航栏为透明
         getWindow().setNavigationBarColor(Color.TRANSPARENT);
-        
+
         // 控制系统UI可见性
         getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
-                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
-                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
+                        View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
         );
-        
+
         // 对于Android R及以上版本，使用WindowInsetsController
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             android.view.WindowInsetsController insetsController = getWindow().getInsetsController();
@@ -215,13 +209,13 @@ public class MainActivity extends AppCompatActivity {
             // 对于Android M到Android Q版本
             getWindow().getDecorView().setSystemUiVisibility(
                     View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
-                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
-                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
-                    View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                            View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
+                            View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
+                            View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
             );
         }
     }
-    
+
     /**
      * 根据当前时间设置应用的日/夜间模式
      * 设置在早上6点到晚上7点之间为白天模式，其他时间为夜间模式
@@ -229,7 +223,7 @@ public class MainActivity extends AppCompatActivity {
     private void setThemeBasedOnTime() {
         Calendar calendar = Calendar.getInstance();
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
-        
+
         // 早上6点到晚上7点为白天模式，其他时间为夜间模式
         if (hour >= 6 && hour < 19) {
             // 白天模式
@@ -251,30 +245,30 @@ public class MainActivity extends AppCompatActivity {
                     if (isLocationAccurate(location)) {
                         // 获取到位置后停止位置更新
                         stopLocationUpdates();
-                         
+
                         double latitude = location.getLatitude();
                         double longitude = location.getLongitude();
                         Log.d(TAG, "Location from request: " + latitude + ", " + longitude + ", Accuracy: " + location.getAccuracy() + "m, Provider: " + location.getProvider());
-                         
+
                         // 检查是否有缓存的位置信息
                         if (preferencesHelper.hasCachedLocation()) {
                             // 比较新获取的城市与缓存的城市是否相同
                             String cachedCityName = preferencesHelper.getCityName();
                             double cachedLatitude = preferencesHelper.getLatitude();
                             double cachedLongitude = preferencesHelper.getLongitude();
-                             
+
                             // 对于城市名称比较，我们需要先获取新位置对应的城市名称
                             // 由于我们还没有获取到天气数据，这里先使用经纬度进行近似比较
                             // 实际项目中可能需要更精确的地理编码比较
-                            boolean isSameLocation = Math.abs(latitude - cachedLatitude) < 0.1 && 
-                                                   Math.abs(longitude - cachedLongitude) < 0.1;
-                             
+                            boolean isSameLocation = Math.abs(latitude - cachedLatitude) < 0.1 &&
+                                    Math.abs(longitude - cachedLongitude) < 0.1;
+
                             if (!isSameLocation) {
-                                    Log.d(TAG, "Location changed significantly, fetching new location and weather data");
-                                    weatherViewModel.fetchLocationAndWeatherData(latitude, longitude);
-                                } else {
-                                    Log.d(TAG, "Location is the same as cached, no need to fetch new weather data");
-                                    // 但仍需要更新缓存的经纬度和最后更新时间
+                                Log.d(TAG, "Location changed significantly, fetching new location and weather data");
+                                weatherViewModel.fetchLocationAndWeatherData(latitude, longitude);
+                            } else {
+                                Log.d(TAG, "Location is the same as cached, no need to fetch new weather data");
+                                // 但仍需要更新缓存的经纬度和最后更新时间
                                 if (weatherViewModel.getCurrentWeather().getValue() != null) {
                                     String cityName = weatherViewModel.getCurrentWeather().getValue().getName();
                                     preferencesHelper.saveLocation(latitude, longitude, cityName);
@@ -319,7 +313,7 @@ public class MainActivity extends AppCompatActivity {
         long timeDelta = System.currentTimeMillis() - location.getTime();
         boolean isRecent = timeDelta < 15 * 60 * 1000; // 延长到15分钟
         boolean isAccurate = location.getAccuracy() < 50; // 放宽到50米精度
-        Log.d(TAG, "Location validation - Recent: " + isRecent + ", Accurate: " + isAccurate + ", Age: " + (timeDelta/1000) + "s, Accuracy: " + location.getAccuracy() + "m");
+        Log.d(TAG, "Location validation - Recent: " + isRecent + ", Accurate: " + isAccurate + ", Age: " + (timeDelta / 1000) + "s, Accuracy: " + location.getAccuracy() + "m");
         return location != null && isRecent && isAccurate;
     }
 
@@ -332,7 +326,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.e(TAG, "Security exception when stopping location updates", e);
             }
         }
-        
+
         // 取消超时处理
         if (locationTimeoutHandler != null) {
             locationTimeoutHandler.removeCallbacksAndMessages(null);
@@ -340,37 +334,37 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startLocationUpdates() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && 
-            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        
+
         // 尝试使用GPS_PROVIDER获取定位
         if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             try {
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 
-                                                     LOCATION_REQUEST_INTERVAL, 
-                                                     10, // 最小距离10米
-                                                     locationListener);
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                        LOCATION_REQUEST_INTERVAL,
+                        10, // 最小距离10米
+                        locationListener);
                 Log.d(TAG, "GPS location updates started");
             } catch (SecurityException e) {
                 Log.e(TAG, "Security exception when starting GPS location updates", e);
             }
         }
-        
+
         // 同时尝试使用NETWORK_PROVIDER获取定位
         if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
             try {
-                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 
-                                                     LOCATION_REQUEST_FASTEST_INTERVAL, 
-                                                     10, // 最小距离10米
-                                                     locationListener);
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
+                        LOCATION_REQUEST_FASTEST_INTERVAL,
+                        10, // 最小距离10米
+                        locationListener);
                 Log.d(TAG, "Network location updates started");
             } catch (SecurityException e) {
                 Log.e(TAG, "Security exception when starting network location updates", e);
             }
         }
-        
+
         // 设置25秒后自动停止位置更新（延长超时时间）
         locationTimeoutHandler.postDelayed(() -> {
             stopLocationUpdates();
@@ -378,18 +372,18 @@ public class MainActivity extends AppCompatActivity {
             useLastKnownLocationWithLowerAccuracy();
         }, 25000);
     }
-    
+
     /**
      * 当定位超时时，尝试使用较低精度要求的最后已知位置
      */
     private void useLastKnownLocationWithLowerAccuracy() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && 
-            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        
+
         Location lastLocation = null;
-        
+
         // 尝试获取任何可用的位置提供者的最后已知位置
         List<String> providers = locationManager.getProviders(true);
         for (String provider : providers) {
@@ -405,12 +399,12 @@ public class MainActivity extends AppCompatActivity {
                 Log.e(TAG, "Security exception when getting last known location for " + provider, e);
             }
         }
-        
+
         if (lastLocation != null) {
             // 降低精度要求，使用可用的最佳位置
             long timeDelta = System.currentTimeMillis() - lastLocation.getTime();
             boolean isAcceptable = timeDelta < 30 * 60 * 1000; // 30分钟内的位置
-            
+
             if (isAcceptable) {
                 double latitude = lastLocation.getLatitude();
                 double longitude = lastLocation.getLongitude();
@@ -420,14 +414,14 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
         }
-        
+
         // 如果没有可用位置，提示用户并提供默认位置作为备选
         Toast.makeText(MainActivity.this, "定位超时，请手动刷新或检查位置服务设置", Toast.LENGTH_LONG).show();
-        
+
         // 使用默认位置（北京）作为最后的备选方案
         useDefaultLocation();
     }
-    
+
     /**
      * 当无法获取位置时的处理方法
      * 不再使用默认位置作为兜底方案
@@ -438,8 +432,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getLocation() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && 
-            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
 
@@ -448,7 +442,7 @@ public class MainActivity extends AppCompatActivity {
 
         // 首先尝试获取最后已知位置
         Location lastLocation = null;
-        
+
         // 优先尝试GPS定位
         if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             try {
@@ -460,7 +454,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.e(TAG, "Security exception when getting last GPS location", e);
             }
         }
-        
+
         // 如果没有GPS位置，尝试网络位置
         if (lastLocation == null && locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
             try {
@@ -472,7 +466,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.e(TAG, "Security exception when getting last network location", e);
             }
         }
-        
+
         // 尝试被动定位提供者
         if (lastLocation == null && locationManager.isProviderEnabled(LocationManager.PASSIVE_PROVIDER)) {
             try {
@@ -484,7 +478,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.e(TAG, "Security exception when getting last passive location", e);
             }
         }
-        
+
         if (lastLocation != null && isLocationAccurate(lastLocation)) {
             double latitude = lastLocation.getLatitude();
             double longitude = lastLocation.getLongitude();
@@ -509,9 +503,9 @@ public class MainActivity extends AppCompatActivity {
         boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
         // 检查被动定位是否开启
         boolean isPassiveEnabled = locationManager.isProviderEnabled(LocationManager.PASSIVE_PROVIDER);
-        
+
         Log.d(TAG, "Location providers status - GPS: " + isGpsEnabled + ", Network: " + isNetworkEnabled + ", Passive: " + isPassiveEnabled);
-        
+
         if (!isGpsEnabled && !isNetworkEnabled && !isPassiveEnabled) {
             // 都没有开启，引导用户去设置
             Toast.makeText(this, "请开启GPS或网络定位服务以获取准确天气信息", Toast.LENGTH_LONG).show();
@@ -519,7 +513,7 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         } else {
             Log.d(TAG, "Location settings are satisfied: GPS=" + isGpsEnabled + ", Network=" + isNetworkEnabled + ", Passive=" + isPassiveEnabled);
-            
+
             // 提示用户定位提供者的状态
             StringBuilder providerStatus = new StringBuilder("当前可用定位: ");
             if (isGpsEnabled) providerStatus.append("GPS ");
@@ -539,7 +533,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        
+
         // 检查是否需要更新天气数据（超过5分钟）
         if (preferencesHelper.hasCachedLocation() && preferencesHelper.isWeatherDataExpired()) {
             // 从后台到前台，先检查位置是否有变化
@@ -560,17 +554,17 @@ public class MainActivity extends AppCompatActivity {
                         Log.e(TAG, "Security exception when getting last known location", e);
                     }
                 }
-                
+
                 if (lastLocation != null) {
                     double newLatitude = lastLocation.getLatitude();
                     double newLongitude = lastLocation.getLongitude();
                     double cachedLatitude = preferencesHelper.getLatitude();
                     double cachedLongitude = preferencesHelper.getLongitude();
-                    
+
                     // 比较新位置与缓存位置是否有显著差异
-                    boolean locationChanged = Math.abs(newLatitude - cachedLatitude) > 0.1 || 
-                                             Math.abs(newLongitude - cachedLongitude) > 0.1;
-                    
+                    boolean locationChanged = Math.abs(newLatitude - cachedLatitude) > 0.1 ||
+                            Math.abs(newLongitude - cachedLongitude) > 0.1;
+
                     if (locationChanged) {
                         Log.d(TAG, "Location changed significantly after returning from background, fetching new location and weather data");
                         weatherViewModel.fetchLocationAndWeatherData(newLatitude, newLongitude);
@@ -578,14 +572,14 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             }
-            
+
             // 如果位置没有变化或无法获取最新位置，则使用缓存位置更新天气数据
             double cachedLatitude = preferencesHelper.getLatitude();
             double cachedLongitude = preferencesHelper.getLongitude();
             Log.d(TAG, "Weather data expired, updating from cached location: " + cachedLatitude + ", " + cachedLongitude);
             weatherViewModel.fetchLocationAndWeatherData(cachedLatitude, cachedLongitude);
         }
-        
+
         // 恢复时，如果还没有获取到位置，重新尝试
         if (weatherViewModel.getCurrentWeather().getValue() == null) {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -601,7 +595,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
-        
+
         // 重新应用沉浸式模式设置
         setupImmersiveMode();
     }
@@ -618,7 +612,7 @@ public class MainActivity extends AppCompatActivity {
             latitude = weather.getCoord().getLat();
             longitude = weather.getCoord().getLon();
         }
-        
+
         // 保存经纬度和更新时间，但不更新城市名称（城市名称由反向地理编码API提供）
         String currentCityName = preferencesHelper.getCityName();
         if (currentCityName == null || currentCityName.isEmpty()) {
@@ -642,28 +636,28 @@ public class MainActivity extends AppCompatActivity {
         if (refreshButton == null) {
             refreshButton = findViewById(R.id.refresh_button);
         }
-        
+
         // 设置更新时间为"更新于"
         String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
         lastUpdatedTextView.setText("更新于: " + currentTime);
-        
+
         // 隐藏刷新按钮
         if (refreshButton != null) {
             refreshButton.setVisibility(View.GONE);
         }
-        
+
         // 取消之前的计时器
         if (updateTimer != null) {
             updateTimer.cancel();
         }
-        
+
         // 设置5分钟后切换为"最后更新"并显示刷新按钮
         updateTimer = new CountDownTimer(5 * 60 * 1000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 // 不需要实现
             }
-            
+
             @Override
             public void onFinish() {
                 runOnUiThread(new Runnable() {
@@ -672,7 +666,7 @@ public class MainActivity extends AppCompatActivity {
                         // 切换为"最后更新"
                         String time = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date(preferencesHelper.getLastUpdateTime()));
                         lastUpdatedTextView.setText("最后更新: " + time);
-                        
+
                         // 显示刷新按钮
                         if (refreshButton != null) {
                             refreshButton.setVisibility(View.VISIBLE);
@@ -686,13 +680,13 @@ public class MainActivity extends AppCompatActivity {
         // 根据天气条件设置图标
         String weatherIcon = weather.getWeather().get(0).getIcon();
         Log.d(TAG, "Weather icon code: " + weatherIcon);
-        
+
         // 构建图标URL
         String iconUrl = "https://openweathermap.org/img/wn/" + weatherIcon + "@4x.png";
         Log.d(TAG, "Loading icon from URL: " + iconUrl);
-        
+
         // 正常加载，会使用缓存
-        ImageLoader.getInstance(MainActivity.this).loadImage(iconUrl, weatherIconImageView, new ImageLoader.ImageLoadCallback() {
+        ImageLoader.getInstance(MainActivity.this).loadImage(iconUrl, weatherIconImageView, useLocalWeatherIcon(weatherIcon), new ImageLoader.ImageLoadCallback() {
             @Override
             public void onSuccess() {
                 Log.d(TAG, "Weather icon loaded successfully");
@@ -703,25 +697,25 @@ public class MainActivity extends AppCompatActivity {
                     weatherIconImageView.setColorFilter(null); // 清除任何颜色滤镜
                 }
             }
-            
+
             @Override
             public void onError(Exception e) {
                 Log.e(TAG, "Failed to load weather icon: " + e.getMessage());
                 // 如果网络加载失败，尝试使用本地图标
-                useLocalWeatherIcon(weatherIcon);
+                onSuccess();
             }
         });
     }
-    
+
     /**
      * 使用本地天气图标资源作为备选
      */
-    private void useLocalWeatherIcon(String iconCode) {
+    private int useLocalWeatherIcon(String iconCode) {
         Log.d(TAG, "Using local weather icon for code: " + iconCode);
-        
+
         // 根据OpenWeatherMap的图标代码映射到本地资源
         int resourceId;
-        
+
         if (iconCode.contains("01")) {
             // 晴天
             resourceId = R.drawable.ic_sunny;
@@ -747,11 +741,8 @@ public class MainActivity extends AppCompatActivity {
             // 未知天气
             resourceId = R.drawable.ic_unknown;
         }
-        
-        // 设置本地图标
-        weatherIconImageView.setImageResource(resourceId);
-        // 确保图标颜色正确
-        weatherIconImageView.setColorFilter(null);
+
+        return resourceId;
     }
 
     private void updateForecastUI(List<ForecastWeather.ForecastItem> forecastItems) {
@@ -760,13 +751,13 @@ public class MainActivity extends AppCompatActivity {
             List<ForecastWeather.ForecastItem> filteredForecastItems = new ArrayList<>();
             long currentTimeMillis = System.currentTimeMillis();
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-            
+
             for (ForecastWeather.ForecastItem item : forecastItems) {
                 try {
                     // 将预报时间转换为毫秒时间戳
                     Date forecastDate = dateFormat.parse(item.getDt_txt());
                     long forecastTimeMillis = forecastDate.getTime();
-                    
+
                     // 只保留时间未过去的预报项
                     if (forecastTimeMillis >= currentTimeMillis) {
                         filteredForecastItems.add(item);
@@ -779,13 +770,13 @@ public class MainActivity extends AppCompatActivity {
                     filteredForecastItems.add(item);
                 }
             }
-            
+
             Log.d(TAG, "Original forecast items: " + forecastItems.size() + ", Filtered items: " + filteredForecastItems.size());
-            
+
             // 保存RecyclerView的当前滚动位置
             LinearLayoutManager layoutManager = (LinearLayoutManager) forecastRecyclerView.getLayoutManager();
             final int[] scrollPosition = {0, 0}; // 使用数组作为容器来保存位置和偏移量，使其可以在内部类中访问
-            
+
             if (layoutManager != null) {
                 scrollPosition[0] = layoutManager.findFirstVisibleItemPosition();
                 View firstVisibleItem = layoutManager.findViewByPosition(scrollPosition[0]);
@@ -794,13 +785,13 @@ public class MainActivity extends AppCompatActivity {
                     scrollPosition[1] = firstVisibleItem.getTop() - forecastRecyclerView.getPaddingTop();
                 }
             }
-            
+
             // 使用按天分的适配器更新数据
             dayGroupedForecastAdapter.updateData(filteredForecastItems);
-            
+
             // 恢复RecyclerView的滚动位置，确保用户手动滑动的位置保持不变
-            if (layoutManager != null && forecastRecyclerView.getAdapter() != null && 
-                forecastRecyclerView.getAdapter().getItemCount() > scrollPosition[0]) {
+            if (layoutManager != null && forecastRecyclerView.getAdapter() != null &&
+                    forecastRecyclerView.getAdapter().getItemCount() > scrollPosition[0]) {
                 // 保存layoutManager的引用
                 final LinearLayoutManager finalLayoutManager = layoutManager;
                 // 使用post确保RecyclerView已经完成布局更新
@@ -813,23 +804,23 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-    
+
     // 定时器，用于5分钟后切换文本和显示刷新按钮
     private CountDownTimer updateTimer;
     private View refreshButton;
-    
+
     // 刷新天气数据的方法
     public void refreshWeather(View view) {
         // 隐藏刷新按钮
         if (refreshButton != null) {
             refreshButton.setVisibility(View.GONE);
         }
-        
+
         // 更新最后更新时间文本为"更新于"
         String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
         lastUpdatedTextView.setText("更新于: " + currentTime);
         preferencesHelper.saveLastUpdateTime(System.currentTimeMillis());
-        
+
         // 直接使用缓存的位置刷新天气数据，不重新请求位置权限
         if (preferencesHelper.hasCachedLocation()) {
             double cachedLatitude = preferencesHelper.getLatitude();
@@ -852,7 +843,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Log.d(TAG, "Requesting location permission");
             // 请求位置权限
-            ActivityCompat.requestPermissions(this, 
+            ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
                     REQUEST_LOCATION_PERMISSION);
         }
@@ -871,7 +862,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 }
             }
-            
+
             if (hasAnyPermission) {
                 // 用户授予了至少一个权限，尝试获取位置
                 Log.d(TAG, "Location permission granted");
