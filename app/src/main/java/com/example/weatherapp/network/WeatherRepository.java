@@ -36,11 +36,11 @@ public class WeatherRepository {
         this.apiKey = apiKey;
     }
 
-    // 获取API key（如果未设置则返回一个默认值）
+    // 获取API key（如果未设置则返回空字符串）
     public String getApiKey() {
         if (apiKey == null || apiKey.isEmpty()) {
-            // 返回一个默认的示例API key，实际使用时应该从用户配置获取
-            return "88867313124dee5e37406ac03d6d5a92";
+            // 返回空字符串，实际使用时应该从用户配置获取
+            return "";
         }
         return apiKey;
     }
