@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.weatherapp.utils.PreferencesHelper;
+import com.example.weatherapp.utils.ThemeUtils;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -22,6 +23,8 @@ public class SettingsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // 设置主题模式（日/夜间）
+        ThemeUtils.setThemeBasedOnTime(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 

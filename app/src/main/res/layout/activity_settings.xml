@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="24dp"
+    android:background="@color/window_background"
     tools:context=".SettingsActivity">
 
     <ImageView
@@ -21,6 +22,7 @@
         android:textSize="24sp"
         android:textStyle="bold"
         android:gravity="center"
+        android:textColor="@color/text_primary_color"
         android:layout_marginBottom="24dp" />
 
     <TextView
@@ -28,7 +30,7 @@
         android:layout_height="wrap_content"
         android:text="请输入您的OpenWeatherMap API Key以使用天气功能。"
         android:textSize="16sp"
-        android:textColor="@android:color/black"
+        android:textColor="@color/text_primary_color"
         android:layout_marginBottom="16dp" />
 
     <TextView
@@ -36,7 +38,7 @@
         android:layout_height="wrap_content"
         android:text="1. 点击下方链接注册OpenWeatherMap账号"
         android:textSize="14sp"
-        android:textColor="@android:color/black"
+        android:textColor="@color/text_secondary_color"
         android:layout_marginBottom="8dp" />
 
     <TextView
@@ -44,7 +46,7 @@
         android:layout_height="wrap_content"
         android:text="2. 注册后在Dashboard中生成API Key"
         android:textSize="14sp"
-        android:textColor="@android:color/black"
+        android:textColor="@color/text_secondary_color"
         android:layout_marginBottom="16dp" />
 
     <Button
@@ -63,7 +65,8 @@
         android:hint="请输入您的API Key"
         android:inputType="text"
         android:padding="12dp"
-        android:background="@android:drawable/edit_text"
+        android:background="@color/card_background"
+        android:textColor="@color/text_primary_color"
         android:layout_marginBottom="24dp" />
 
     <Button
