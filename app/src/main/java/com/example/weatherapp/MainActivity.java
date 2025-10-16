@@ -53,6 +53,7 @@ import com.example.weatherapp.utils.ImageLoader;
 import com.example.weatherapp.utils.PreferencesHelper;
 import com.example.weatherapp.utils.WeatherIconUtils;
 import com.example.weatherapp.utils.TimeUtils;
+import com.example.weatherapp.view.TemperatureChartView;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "WeatherApp";
@@ -81,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
     private View weatherContentLayout;
     private RecyclerView forecastRecyclerView;
     private DayGroupedForecastAdapter dayGroupedForecastAdapter;
+    private TemperatureChartView temperatureChartView;
     private PreferencesHelper preferencesHelper;
 
     @Override
@@ -142,6 +144,9 @@ public class MainActivity extends AppCompatActivity {
         forecastRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         dayGroupedForecastAdapter = new DayGroupedForecastAdapter(this);
         forecastRecyclerView.setAdapter(dayGroupedForecastAdapter);
+        
+        // 初始化气温曲线图
+        temperatureChartView = findViewById(R.id.temperature_chart);
 
         // 初始化ViewModel和LocationManager
         weatherViewModel = new ViewModelProvider(this).get(WeatherViewModel.class);
@@ -711,6 +716,11 @@ public class MainActivity extends AppCompatActivity {
             }
 
             Log.d(TAG, "Original forecast items: " + forecastItems.size() + ", Filtered items: " + filteredForecastItems.size());
+            
+            // 更新气温曲线图数据
+            if (temperatureChartView != null) {
+                temperatureChartView.setTemperatureData(filteredForecastItems);
+            }
 
             // 保存RecyclerView的当前滚动位置
             LinearLayoutManager layoutManager = (LinearLayoutManager) forecastRecyclerView.getLayoutManager();
